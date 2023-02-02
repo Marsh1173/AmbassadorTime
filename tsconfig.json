@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./public/js",
+    "lib": ["ES2020", "DOM"],
+    "jsx": "react",
+    "esModuleInterop": true,
+    "target": "ESNext"
+  },
+  "include": [
+    "src/client/**/*.js",
+    "src/client/**/*.ts",
+    "src/client/**/*.tsx",
+    "src/model/**/*.js",
+    "src/model/**/*.ts",
+    "src/model/**/*.tsx"
+  ]
+}
