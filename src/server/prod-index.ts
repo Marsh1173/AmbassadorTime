@@ -1,9 +1,4 @@
-// import { init_log } from "./misc/Logging/Logging";
-// import { ServerApp } from "./Network/ServerApp";
+import { ServerStarter } from "./application/ServerStarter";
+import { DEFAULT_SERVER_CONFIG } from "./utils/ServerConfig";
 
-// init_log();
-
-// let app: ServerApp = new ServerApp();
-// app.init();
-
-console.log("Starting prod index");
+ServerStarter(DEFAULT_SERVER_CONFIG);

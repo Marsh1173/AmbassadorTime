@@ -1,23 +1,37 @@
-# Generic Websocket Interface
+Executive Events
+Ambassador Hour Log
 
-This is a generic websocket interface that provides a starting point for a web-based game that uses websockets, typescript, react, and less.
+#### View .db file online
 
-Based off of the generic interface created by Jefferson Roylance.
+- https://inloop.github.io/sqlite-viewer/
 
-To start the webpack dev server, run `yarn watch`
-To start the dev distribution server, run `yarn dev-server`
-To start the production distribution server, run `yarn prod-server`
-To ruun automated tests, run `yarn test`
+## DATABASE
 
-# TO-DOs
+- LogDao
+- LogDao specs
 
-TECH DEBT GOALS
-Fix presenters and server handlers accordingly
-Put presenters in folders and make sub-apps
-Make ids strings
+## BACKEND SERVICES
 
-MILESTONE GOALS
-map basics
-physics
+- Finalize server and client apis
+- Validate incoming user messages
+- Make admin and log services
+- Make log text file and send it to user?
+- - log every "POST" that comes through an endpoint?
 
--Instanceof and classes have the key to parsing server messages!?
+## FRONTEND
+
+- Login flow
+- Everything logger flow
+- Everything admin flow
+- Touch up styling
+
+## FINISHING TOUCHES
+
+- Run everything by Alyssa, pass along Admin password and username
+- Add approved favicon
+- Add contact info
+- Remove any personal info and clean up license
+- back up database every month
+- new action-log file every month
+
+## PUSH TO PRODUCTION

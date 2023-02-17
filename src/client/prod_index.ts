@@ -1,4 +1,4 @@
-// import { ClientApp } from "./Presenter/App";
+import { ClientApp } from "./application/ClientApp";
+import { DEFAULT_CLIENT_CONFIG } from "./utils/ClientConfig";
 
-// let client_app = ClientApp.get_instance();
-// client_app.change_state_to_initializing();
+new ClientApp(DEFAULT_CLIENT_CONFIG);

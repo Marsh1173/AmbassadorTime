@@ -25,7 +25,7 @@
     "ts-loader": "^9.4.1",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^4.9.0",
+    "typescript": "^4.9.5",
     "webpack": "^5.28.0",
     "webpack-cli": "^5.0.0",
     "webpack-dev-server": "^4.11.1",
@@ -36,6 +36,11 @@
     "build": "npx webpack --config prod.config.js --mode production --env=production",
     "prod-server": "ts-node ./src/server/prod-index.ts",
     "dev-server": "ts-node-dev --respawn --notify false --prefer-ts --ignore-watch node_modules -- ./src/server/dev-index.ts",
-    "test": "ts-node-dev ./src/test/init.ts"
+    "test": "ts-node-dev ./src/test/run.ts",
+    "create-db-tables": "ts-node-dev ./src/server/database/utils/init-create.ts"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^7.6.3",
+    "better-sqlite3": "^8.0.1"
   }
 }
