@@ -1,15 +1,15 @@
 import BetterSqlite3 from "better-sqlite3";
 import { HashAndSalt, PasswordService } from "./utils/PasswordService";
 import { DAO, FailureMsg, ReturnMsg, SuccessMsg } from "../utils/Dao";
-import { UserData, UserModel, UserId } from "./UserModel";
+import { UserData, UserModel, UserId } from "../../../model/db/UserModel";
 import { ValidateDisplayName } from "./utils/ValidateDisplayName";
 import { ValidateUserId } from "./utils/ValidateUserId";
+import {
+  ValidateLoginReturnMsg,
+  ValidateLoginSuccess,
+} from "../../authentication/ClientValidator";
 
 export const userid_taken_string: string = "User id already taken";
-
-export interface ValidateLoginSuccess extends SuccessMsg {
-  user_data: UserData;
-}
 
 export const create_user_table_string = (table_name: string) => {
   return `CREATE TABLE '${table_name}' (\
@@ -26,7 +26,7 @@ export interface IUserDao {
   register_logger(data: Pick<UserModel, "id" | "displayname">): ReturnMsg;
   validate_login(
     data: Pick<UserModel, "id" | "password">
-  ): ValidateLoginSuccess | FailureMsg;
+  ): ValidateLoginReturnMsg;
   promote_logger(data: UserId): ReturnMsg;
   demote_admin_logger(data: UserId): ReturnMsg;
   is_admin(data: UserId): ReturnMsg;
@@ -103,7 +103,7 @@ export class UserDao extends DAO implements IUserDao {
 
   public validate_login(
     data: Pick<UserModel, "password" | "id">
-  ): ValidateLoginSuccess | FailureMsg {
+  ): ValidateLoginReturnMsg {
     return this.catch_database_errors_get<ValidateLoginSuccess>(() => {
       const failed_attempt: FailureMsg = {
         success: false,

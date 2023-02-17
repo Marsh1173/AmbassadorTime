@@ -20,7 +20,10 @@ export function log_test_output(
   console.log("\u001b[" + color_code + "m" + msg + "\u001b[0m");
 }
 
-export const run_tests = async (tests_lambda: () => void, name: string) => {
+export const run_test_group = async (
+  tests_lambda: () => void,
+  name: string
+) => {
   console.group("Testing " + name);
   try {
     await tests_lambda();
@@ -38,6 +41,8 @@ export const run_tests = async (tests_lambda: () => void, name: string) => {
       "fail"
     );
   }
+  let all_passed: boolean = passed_failed.failed === 0;
   passed_failed.failed = 0;
   passed_failed.passed = 0;
+  return all_passed;
 };

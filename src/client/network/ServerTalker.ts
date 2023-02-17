@@ -65,7 +65,9 @@ export class ServerTalker
   private on_close() {
     console.error("Websocket connection closed");
     this.observers.forEach((observer) => {
-      observer.on_server_talker_close();
+      observer.on_server_talker_close(
+        "You have been disconnected. Try refreshing."
+      );
     });
 
     this.wss.onerror = () => {};
@@ -73,7 +75,7 @@ export class ServerTalker
 
   private on_unable_to_connect() {
     this.observers.forEach((observer) => {
-      observer.on_server_talker_close();
+      observer.on_server_talker_close("Could not connect.");
     });
   }
 

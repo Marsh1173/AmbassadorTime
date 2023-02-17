@@ -1,4 +1,4 @@
-import { UserId } from "../database/users/UserModel";
+import { UserId } from "../../model/db/UserModel";
 import { ReturnMsg } from "../database/utils/Dao";
 
 export interface IAuthenticatedClientTracker {

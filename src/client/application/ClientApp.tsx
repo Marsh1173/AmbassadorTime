@@ -4,14 +4,14 @@ import { ClientConfig } from "../utils/ClientConfig";
 import {
   AuthenticationView,
   AuthenticationViewProps,
-} from "./authentication/AuthenticationView";
+} from "./authentication/view/AuthenticationView";
 import {
   ConnectionView,
   ConnectionViewProps,
 } from "./connection/ConnectionView";
 import { DisconnectionView } from "./disconnection/DisconnectionView";
 
-import "../styles/MainStyles.less";
+import "../view/styles/MainStyles.less";
 
 export type IncompleteProps<PropType> = Omit<PropType, "client_app">;
 

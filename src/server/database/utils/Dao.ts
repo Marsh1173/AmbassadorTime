@@ -1,9 +1,5 @@
 import Sqlite3 from "better-sqlite3";
 
-export interface HasDBModelId<IdType> {
-  id: IdType;
-}
-
 export type ReturnMsg = SuccessMsg | FailureMsg;
 
 export interface SuccessMsg {

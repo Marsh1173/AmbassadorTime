@@ -1,16 +1,33 @@
 import { test_user_database } from "../server/database/users/UserDao.spec";
 import { test_msg_parser } from "../server/network/api/utils/MsgParser.spec";
-import { run_tests } from "./utils";
+import { log_test_output, run_test_group } from "./utils";
 
-const test = async () => {
+const tests: (() => Promise<boolean>)[] = [
+  () => {
+    return run_test_group(test_user_database, "User Database");
+  },
+  () => {
+    return run_test_group(test_msg_parser, "Message Parser");
+  },
+];
+
+const run_tests = async () => {
   console.group("Testing");
   console.time("Time taken to run tests");
 
-  await run_tests(test_user_database, "User Database");
-  await run_tests(test_msg_parser, "Message Parser");
+  let some_failed: boolean = false;
+  for (const test of tests) {
+    let results: boolean = await test();
+    if (!results) some_failed = true;
+  }
 
   console.timeEnd("Time taken to run tests");
+  if (some_failed) {
+    log_test_output("Not all tests passed.", "fail");
+  } else {
+    log_test_output("All tests passed.", "pass");
+  }
   console.groupEnd();
 };
 
-test();
+run_tests();

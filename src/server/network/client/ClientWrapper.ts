@@ -1,5 +1,6 @@
 import { HasId, Id, make_id } from "../../../model/utils/Id";
 import { ClientMessage } from "../api/ServerApi";
+import { ServerMessage } from "../../../client/network/api/ClientApi";
 import { IClient } from "./Client";
 
 export interface IClientWrapper extends HasId {
@@ -20,7 +21,7 @@ export abstract class ClientWrapper implements IClientWrapper {
   public abstract receive_message(msg: ClientMessage, client_id: string): void;
   public abstract on_client_close(): void;
 
-  protected send(data: any) {
+  protected send(data: ServerMessage) {
     if (this.is_deconstructed) {
       console.error("Tried to send to a deconstructed client wrapper");
     } else {

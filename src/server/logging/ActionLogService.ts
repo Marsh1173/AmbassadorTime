@@ -1,4 +1,4 @@
-import { UserData } from "../database/users/UserModel";
+import { UserData } from "../../model/db/UserModel";
 import { Logger } from "./Logger";
 
 export abstract class ActionLogService {

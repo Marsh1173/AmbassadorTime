@@ -7,7 +7,7 @@ import {
   UserDao,
   userid_taken_string,
 } from "./UserDao";
-import { UserData } from "./UserModel";
+import { UserData } from "../../../model/db/UserModel";
 
 const test_users_table_name: string = "test_users";
 

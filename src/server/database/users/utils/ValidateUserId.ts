@@ -1,5 +1,5 @@
 import { ReturnMsg } from "../../utils/Dao";
-import { UsernameMaxLength } from "../UserModel";
+import { UsernameMaxLength } from "../../../../model/db/UserModel";
 
 export abstract class ValidateUserId {
   public static validate(user_id: string): ReturnMsg {

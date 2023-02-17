@@ -1,5 +1,5 @@
-import { HasDBModelId } from "../utils/Dao";
-import { DBBoolean } from "../utils/DBBoolean";
+import { DBBoolean } from "./DBBoolean";
+import { HasDBModelId } from "./HasDbModelId";
 
 export type UserId = string;
 export interface UserModel extends HasDBModelId<UserId> {

@@ -1,8 +1,8 @@
 import { DAO, FailureMsg, ReturnMsg, SuccessMsg } from "../utils/Dao";
 import BetterSqlite3 from "better-sqlite3";
 import { LogId, LogModel } from "./LogModel";
-import { UserId } from "../users/UserModel";
 import { HasId, make_id } from "../../../model/utils/Id";
+import { UserId } from "../../../model/db/UserModel";
 
 export interface ILogDao {
   create_log(

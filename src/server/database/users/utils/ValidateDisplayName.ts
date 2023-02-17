@@ -1,5 +1,5 @@
 import { ReturnMsg } from "../../utils/Dao";
-import { DisplayNameMaxLength } from "../UserModel";
+import { DisplayNameMaxLength } from "../../../../model/db/UserModel";
 
 export abstract class ValidateDisplayName {
   public static validate(display_name: string): ReturnMsg {

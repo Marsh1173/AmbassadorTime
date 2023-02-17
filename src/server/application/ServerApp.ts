@@ -15,7 +15,7 @@ import { UserDao } from "../database/users/UserDao";
 import { DB } from "../database/utils/DB";
 
 export interface IServerApp {
-  readonly authentication_service: IAuthenticationService;
+  readonly auth_service: IAuthenticationService;
   readonly user_dao: UserDao;
 }
 
@@ -24,7 +24,7 @@ export class ServerApp implements IServerApp {
   private readonly websocket_listener: IWebsocketListener;
   private readonly app: Application;
 
-  public readonly authentication_service: IAuthenticationService;
+  public readonly auth_service: IAuthenticationService;
 
   public readonly user_dao: UserDao;
 
@@ -44,6 +44,6 @@ export class ServerApp implements IServerApp {
     this.websocket_listener.start_websocket_listener();
 
     //services
-    this.authentication_service = new AuthenticationService(this);
+    this.auth_service = new AuthenticationService(this);
   }
 }
