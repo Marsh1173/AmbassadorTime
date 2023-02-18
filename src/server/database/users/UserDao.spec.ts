@@ -8,6 +8,7 @@ import {
   userid_taken_string,
 } from "./UserDao";
 import { UserData } from "../../../model/db/UserModel";
+import { DBBoolean } from "../../../model/db/DBBoolean";
 
 const test_users_table_name: string = "test_users";
 
@@ -62,9 +63,11 @@ const create_table = (name: string, db: Database) => {
 };
 
 const register_users = (user_dao: IUserDao) => {
-  let register_results: ReturnMsg = user_dao.register_logger({
+  let register_results: ReturnMsg = user_dao.register_user({
     id: "Naters",
     displayname: "Nate",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     register_results.success,
@@ -72,9 +75,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal true`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "Marshers",
     displayname: "Marsh",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     register_results.success,
@@ -82,9 +87,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal true`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "Marshers",
     displayname: "MarshyTwo",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -99,9 +106,11 @@ const register_users = (user_dao: IUserDao) => {
     );
   }
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "",
     displayname: "Username",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -109,9 +118,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal false`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: " ",
     displayname: "Username",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -119,9 +130,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal false`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "-",
     displayname: "Username",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -129,9 +142,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal false`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: ".",
     displayname: "Username",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -139,9 +154,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal false`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "abcd1000",
     displayname: "bad username1",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -149,9 +166,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal false`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "abcd1000",
     displayname: "bad username.",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -159,9 +178,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal false`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "abc",
     displayname: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,
@@ -169,9 +190,11 @@ const register_users = (user_dao: IUserDao) => {
     `${register_results.success} should equal false`
   );
 
-  register_results = user_dao.register_logger({
+  register_results = user_dao.register_user({
     id: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     displayname: "Display Name",
+    is_logger: DBBoolean.True,
+    is_admin: DBBoolean.False,
   });
   assert(
     !register_results.success,

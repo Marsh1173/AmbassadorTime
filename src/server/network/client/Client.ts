@@ -3,17 +3,17 @@ import { BufferedMessageReceiver } from "../../../model/utils/BufferedMessageRec
 import { HasId, Id } from "../../../model/utils/Id";
 import { ServerConfig } from "../../utils/ServerConfig";
 import { ClientMessage, ServerApiSchema } from "../api/ServerApi";
-import { MsgParser } from "../api/utils/MsgParser";
-import { IClientWrapper } from "./ClientWrapper";
+import { MsgParser } from "../api/utils/parsing/MsgParser";
+import { ClientWrapper } from "./ClientWrapper";
 
 export interface IClient extends HasId {
   send: (data: any) => void;
-  add_observer: (new_observer: IClientWrapper) => void;
+  add_observer: (new_observer: ClientWrapper) => void;
   remove_observer: (id: Id) => void;
 }
 
 export class Client
-  extends BufferedMessageReceiver<IClientWrapper>
+  extends BufferedMessageReceiver<ClientWrapper, string>
   implements IClient
 {
   constructor(
@@ -23,7 +23,7 @@ export class Client
   ) {
     super();
     ws.on("message", (msg: string) => {
-      this.on_receive_message(JSON.parse(msg));
+      this.on_receive_message(msg);
     });
 
     ws.onclose = () => this.on_close();
@@ -52,13 +52,19 @@ export class Client
 
   /* MESSAGE RECEIVING (mostly implemented in the BufferedMessageReceiver class) */
   protected send_message_to_observers(
-    observers: IClientWrapper[],
-    msg: any
+    observers: ClientWrapper[],
+    msg: string
   ): void {
     let client_msg: ClientMessage | undefined =
       MsgParser.parse_msg<ClientMessage>(msg, ServerApiSchema);
 
-    if (!client_msg) return; // invalid client message
+    if (!client_msg) {
+      if (this.config.is_development) {
+        console.error("UNRECOGNIZED MESSAGE");
+        console.error(msg);
+      }
+      return;
+    }
 
     for (const observer of observers) {
       try {

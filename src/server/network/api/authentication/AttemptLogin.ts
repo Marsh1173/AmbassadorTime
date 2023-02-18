@@ -1,5 +1,5 @@
-import { MessageInterface } from "../utils/MessageInterface";
-import { BaseSchema } from "../utils/Schema";
+import { MessageInterface } from "../utils/msg/MessageInterface";
+import { BaseSchema } from "../utils/parsing/Schema";
 
 export interface AttemptLoginMsg extends MessageInterface {
   type: "AttemptLoginMsg";

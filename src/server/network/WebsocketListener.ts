@@ -48,7 +48,7 @@ export class WebsocketListener implements IWebsocketListener {
     let id: Id = make_id();
     console.log("Connected to " + id);
     let client: IClient = new Client(this.config, ws, id);
-    this.server_app.auth_service.unauthenticated_client_tracker.attach_client(
+    this.server_app.auth_service.unauthenticated_client_map.attach_client(
       client
     );
   }

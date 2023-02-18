@@ -1,25 +1,22 @@
-import { UserData } from "../../model/db/UserModel";
-import { AttemptLoginMsg } from "../network/api/authentication/AttemptLogin";
+import { UserData } from "../../../model/db/UserModel";
+import { AttemptLoginMsg } from "../../network/api/authentication/AttemptLogin";
 import {
   ClientMessage,
   ClientMessageNotImplemented,
-} from "../network/api/ServerApi";
-import { IClient } from "../network/client/Client";
-import { ClientWrapper, IClientWrapper } from "../network/client/ClientWrapper";
-import { IAuthenticationService } from "./AuthenticationService";
-import { ValidateLoginReturnMsg } from "./ClientValidator";
+} from "../../network/api/ServerApi";
+import { IClient } from "../../network/client/Client";
+import { ClientWrapper } from "../../network/client/ClientWrapper";
+import { IAuthenticationService } from "../AuthenticationService";
+import { ValidateLoginReturnMsg } from "../utils/ClientValidator";
+import { UnauthenticatedClientMap } from "./UnauthenticatedClientMap";
 
-export interface IUnauthenticatedClientWrapper extends IClientWrapper {}
-
-export class UnauthenticatedClientWrapper
-  extends ClientWrapper
-  implements IUnauthenticatedClientWrapper
-{
+export class UnauthenticatedClientWrapper extends ClientWrapper {
   constructor(
     private readonly auth_service: IAuthenticationService,
-    client: IClient
+    client: IClient,
+    client_map: UnauthenticatedClientMap
   ) {
-    super(client);
+    super(client, client_map);
   }
 
   public receive_message(msg: ClientMessage, client_id: string): void {
@@ -36,8 +33,8 @@ export class UnauthenticatedClientWrapper
     }
   }
 
-  public on_client_close(): void {
-    this.auth_service.unauthenticated_client_tracker.disconnect_client(this.id);
+  protected log_disconnection(): void {
+    console.log("Disconnected from unauthenticated client " + this.id);
   }
 
   private attempt_login(msg: AttemptLoginMsg) {
@@ -49,13 +46,20 @@ export class UnauthenticatedClientWrapper
 
     if (!validation_results.success) {
       this.send_unsuccessful_login(validation_results.msg);
-    } else {
-      this.send_successful_login(validation_results.user_data);
-      this.auth_service.client_validator.on_successful_login(
-        validation_results.user_data,
-        this
-      );
+      return;
     }
+
+    console.log(
+      "Successfully authenticated user " +
+        validation_results.user_data.displayname
+    );
+    this.send_successful_login(validation_results.user_data);
+
+    let client: IClient = this.deconstruct();
+    this.auth_service.server_app.user_service.user_client_map.attach_client(
+      client,
+      validation_results.user_data
+    );
   }
 
   private send_unsuccessful_login(msg: string) {

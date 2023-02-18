@@ -13,9 +13,11 @@ import {
 } from "../authentication/AuthenticationService";
 import { UserDao } from "../database/users/UserDao";
 import { DB } from "../database/utils/DB";
+import { IUserService, UserService } from "../user/UserService";
 
 export interface IServerApp {
   readonly auth_service: IAuthenticationService;
+  readonly user_service: IUserService;
   readonly user_dao: UserDao;
 }
 
@@ -25,6 +27,7 @@ export class ServerApp implements IServerApp {
   private readonly app: Application;
 
   public readonly auth_service: IAuthenticationService;
+  public readonly user_service: IUserService;
 
   public readonly user_dao: UserDao;
 
@@ -45,5 +48,6 @@ export class ServerApp implements IServerApp {
 
     //services
     this.auth_service = new AuthenticationService(this);
+    this.user_service = new UserService(this);
   }
 }

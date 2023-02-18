@@ -2,7 +2,8 @@ import {
   ClientAuthenticationSchema,
   ClientAuthenticationMessage,
 } from "./authentication/AuthenticationApi";
-import { OptionSchema } from "./utils/Schema";
+import { ClientUserMessage, ClientUserSchema } from "./user/UserApi";
+import { OptionSchema } from "./utils/parsing/Schema";
 
 export class ClientMessageNotImplemented extends Error {
   constructor(client_msg: any) {
@@ -10,6 +11,9 @@ export class ClientMessageNotImplemented extends Error {
   }
 }
 
-export type ClientMessage = ClientAuthenticationMessage;
+export type ClientMessage = ClientAuthenticationMessage | ClientUserMessage;
 
-export const ServerApiSchema: OptionSchema = [ClientAuthenticationSchema];
+export const ServerApiSchema: OptionSchema = [
+  ClientAuthenticationSchema,
+  ClientUserSchema,
+];

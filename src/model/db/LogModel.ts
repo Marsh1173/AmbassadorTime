@@ -1,5 +1,5 @@
-import { HasId, Id } from "../../../model/utils/Id";
-import { UserId } from "../users/UserModel";
+import { HasId, Id } from "../utils/Id";
+import { UserId } from "./UserModel";
 
 export type LogId = string;
 export interface LogModel extends HasId {

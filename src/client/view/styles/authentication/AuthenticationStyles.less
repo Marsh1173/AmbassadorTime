@@ -1,8 +1,48 @@
-.AuthenticationForm {
-  display: flex;
-  flex-direction: column;
+.AuthenticationView {
+  .flex;
+  padding-top: 20vh;
 
-  .title {
-    .page-title;
+  .AuthenticationForm {
+    .flex;
+    .padding;
+    .gap;
+
+    text-align: center;
+
+    width: 400px;
+    max-width: 100vw;
+
+    & > * {
+      width: 100%;
+    }
+
+    .title {
+      .title-text;
+      .big-text;
+    }
+
+    input[type="submit"] {
+      &:not(:disabled) {
+        .shadowed-button (@color: @uvu-green);
+      }
+      &:disabled {
+        .shadowed-button (@color: @uvu-silver);
+      }
+      .rounded;
+      .padding-small;
+      .big-text;
+    }
+
+    input:not([type="submit"]) {
+      .padding-smaller;
+      .mid-text;
+      .regular-text;
+      .rounded;
+      .bordered;
+    }
+  }
+  .error {
+    .small-text;
+    .error-text;
   }
 }

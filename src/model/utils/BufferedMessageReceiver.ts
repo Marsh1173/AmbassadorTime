@@ -1,8 +1,9 @@
 import { HasId, Id } from "./Id";
 
-type MessageType = any;
-
-export abstract class BufferedMessageReceiver<ObserverType extends HasId> {
+export abstract class BufferedMessageReceiver<
+  ObserverType extends HasId,
+  MessageType
+> {
   protected observers: Map<Id, ObserverType> = new Map();
 
   protected message_buffer: MessageType[] = [];

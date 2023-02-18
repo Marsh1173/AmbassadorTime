@@ -1,4 +1,4 @@
-import { MessageInterface } from "./MessageInterface";
+import { MessageInterface } from "../msg/MessageInterface";
 import { OptionSchema, BaseSchema, FieldSchemas } from "./Schema";
 
 export abstract class MsgParser {

@@ -7,7 +7,7 @@ import { ValidateUserId } from "./utils/ValidateUserId";
 import {
   ValidateLoginReturnMsg,
   ValidateLoginSuccess,
-} from "../../authentication/ClientValidator";
+} from "../../authentication/utils/ClientValidator";
 
 export const userid_taken_string: string = "User id already taken";
 
@@ -23,7 +23,9 @@ export const create_user_table_string = (table_name: string) => {
 };
 
 export interface IUserDao {
-  register_logger(data: Pick<UserModel, "id" | "displayname">): ReturnMsg;
+  register_user(
+    data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">
+  ): ReturnMsg;
   validate_login(
     data: Pick<UserModel, "id" | "password">
   ): ValidateLoginReturnMsg;
@@ -55,7 +57,7 @@ export class UserDao extends DAO implements IUserDao {
     );
 
     this.insert_user = this.db.prepare(
-      `INSERT INTO ${this.table_name} (id, displayname, password, salt, is_logger, is_admin) VALUES (?, ?, ?, ?, 1, 0);`
+      `INSERT INTO ${this.table_name} (id, displayname, password, salt, is_logger, is_admin) VALUES (?, ?, ?, ?, ?, ?);`
     );
 
     this.get_user = this.db.prepare(
@@ -75,8 +77,8 @@ export class UserDao extends DAO implements IUserDao {
     );
   }
 
-  public register_logger(
-    data: Pick<UserModel, "id" | "displayname">
+  public register_user(
+    data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">
   ): ReturnMsg {
     let validate_user_id_results: ReturnMsg = ValidateUserId.validate(data.id);
     if (!validate_user_id_results.success) {
@@ -95,7 +97,9 @@ export class UserDao extends DAO implements IUserDao {
         data.id,
         data.displayname,
         hash_and_salt.hash,
-        hash_and_salt.salt
+        hash_and_salt.salt,
+        data.is_logger,
+        data.is_admin
       );
       return { success: true };
     }, new Map([["SQLITE_CONSTRAINT_PRIMARYKEY", userid_taken_string]]));

@@ -1,6 +1,6 @@
 import { LocalStorage } from "../../../utils/LocalStorage";
 
-export class FetchStoredLogin {
+export abstract class FetchStoredLogin {
   public static fetch(on_find: (username: string, password: string) => void) {
     let last_used_password: string | undefined =
       LocalStorage.get_local_storage_item("login-password");

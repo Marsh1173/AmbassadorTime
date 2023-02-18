@@ -1,17 +1,19 @@
 import { BufferedMessageReceiver } from "../../model/utils/BufferedMessageReceiver";
 import { Id } from "../../model/utils/Id";
+import { ClientMessage } from "../../server/network/api/ServerApi";
 import { ClientConfig } from "../utils/ClientConfig";
+import { ServerMessage } from "./api/ClientApi";
 import { IServerTalkerWrapper } from "./ServerTalkerWrapper";
 
 export interface IServerTalker {
-  send: (msg: any) => void;
+  send: (msg: ClientMessage) => void;
   close: () => void;
   add_observer: (new_observer: IServerTalkerWrapper) => void;
   remove_observer: (id: Id) => void;
 }
 
 export class ServerTalker
-  extends BufferedMessageReceiver<IServerTalkerWrapper>
+  extends BufferedMessageReceiver<IServerTalkerWrapper, string>
   implements IServerTalker
 {
   private wss: WebSocket;
@@ -45,7 +47,7 @@ export class ServerTalker
 
       wss.onmessage = (msg: MessageEvent) => {
         try {
-          this.on_receive_message(JSON.parse(msg.data));
+          this.on_receive_message(msg.data);
         } catch (err) {
           console.error(err);
         }
@@ -80,8 +82,9 @@ export class ServerTalker
   }
 
   /* MESSAGE SENDING */
-  public send(msg: any) {
+  public send(msg: ClientMessage) {
     if (this.wss.readyState === this.wss.OPEN) {
+      let string;
       this.wss.send(JSON.stringify(msg));
     } else {
       console.error("ERROR: TRIED TO SEND TO A CLOSED WEBSOCKET");
@@ -91,10 +94,11 @@ export class ServerTalker
   /* MESSAGE RECEIVING (mostly implemented in the MutexObservableMessageReceiver class) */
   protected send_message_to_observers(
     observers: IServerTalkerWrapper[],
-    msg: any
+    msg: string
   ): void {
+    let server_msg: ServerMessage = JSON.parse(msg) as ServerMessage;
     observers.forEach((observer) => {
-      observer.receive_message(msg);
+      observer.receive_message(server_msg);
     });
   }
 }

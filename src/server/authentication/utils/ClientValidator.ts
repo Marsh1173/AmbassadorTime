@@ -1,7 +1,6 @@
-import { UserData } from "../../model/db/UserModel";
-import { FailureMsg, ReturnMsg, SuccessMsg } from "../database/utils/Dao";
-import { IAuthenticationService } from "./AuthenticationService";
-import { IUnauthenticatedClientWrapper } from "./UnauthenticatedClientWrapper";
+import { UserData } from "../../../model/db/UserModel";
+import { FailureMsg, ReturnMsg, SuccessMsg } from "../../database/utils/Dao";
+import { IAuthenticationService } from "../AuthenticationService";
 
 export interface ValidateLoginSuccess extends SuccessMsg {
   user_data: UserData;
@@ -13,10 +12,6 @@ export interface IClientValidator {
     user_id: string,
     password: string
   ): ValidateLoginReturnMsg;
-  on_successful_login(
-    user_data: UserData,
-    client: IUnauthenticatedClientWrapper
-  ): void;
 }
 
 export class ClientValidator implements IClientValidator {
@@ -38,7 +33,7 @@ export class ClientValidator implements IClientValidator {
 
     //check if user is already logged in
     let already_logged_in: ReturnMsg =
-      this.auth_service.authenticated_client_tracker.attempt_authenticate_client(
+      this.auth_service.authenticated_client_tracker.attempt_add_client(
         user_id
       );
     if (!already_logged_in.success) {
@@ -47,9 +42,4 @@ export class ClientValidator implements IClientValidator {
 
     return validate_user_id_and_password;
   }
-
-  public on_successful_login(
-    user_data: UserData,
-    client: IUnauthenticatedClientWrapper
-  ) {}
 }

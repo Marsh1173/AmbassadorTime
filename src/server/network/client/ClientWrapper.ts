@@ -2,24 +2,28 @@ import { HasId, Id, make_id } from "../../../model/utils/Id";
 import { ClientMessage } from "../api/ServerApi";
 import { ServerMessage } from "../../../client/network/api/ClientApi";
 import { IClient } from "./Client";
+import { ClientMap } from "./ClientMap";
+import { UserId } from "../../../model/db/UserModel";
 
-export interface IClientWrapper extends HasId {
-  receive_message(msg: ClientMessage, client_id: Id): void;
-  on_client_close(client_id: Id): void;
-  deconstruct(): IClient;
-}
-
-export abstract class ClientWrapper implements IClientWrapper {
+export abstract class ClientWrapper implements HasId {
   public readonly id: Id;
   protected is_deconstructed: boolean = false;
 
-  constructor(private readonly client: IClient) {
+  constructor(
+    private readonly client: IClient,
+    private readonly client_map: ClientMap<ClientWrapper>
+  ) {
     this.id = make_id();
     this.client.add_observer(this);
   }
 
   public abstract receive_message(msg: ClientMessage, client_id: string): void;
-  public abstract on_client_close(): void;
+
+  public on_client_close(id: UserId): void {
+    this.client_map.disconnect_client(this.id);
+    this.log_disconnection();
+  }
+  protected abstract log_disconnection(): void;
 
   protected send(data: ServerMessage) {
     if (this.is_deconstructed) {
@@ -32,6 +36,7 @@ export abstract class ClientWrapper implements IClientWrapper {
   public deconstruct(): IClient {
     this.is_deconstructed = true;
     this.client.remove_observer(this.id);
+    this.client_map.disconnect_client(this.id);
 
     return this.client;
   }

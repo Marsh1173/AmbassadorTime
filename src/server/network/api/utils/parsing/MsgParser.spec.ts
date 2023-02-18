@@ -1,10 +1,18 @@
-import { assert } from "../../../../test/assert";
+import { assert } from "../../../../../test/assert";
 import { MsgParser } from "./MsgParser";
 import { OptionSchema } from "./Schema";
 
 const test_empty_schema: OptionSchema = [];
 
-const test_schema: OptionSchema = [];
+const test_schema: OptionSchema = [
+  {
+    type: "BasicMessage",
+    fields: [
+      { property_name: "test1", property_type: "string", is_optional: false },
+      { property_name: "test2", property_type: "number", is_optional: false },
+    ],
+  },
+];
 
 export const test_msg_parser = () => {
   for (const test of tests) {
@@ -45,7 +53,21 @@ const tests: (() => void)[] = [
       "incomplete object should return undefined"
     );
   },
-  () => {},
+  () => {
+    //basic message
+    assert(
+      MsgParser.parse_msg(
+        "{\
+        type: 'BasicMessage',\
+        test1: 'hello'\
+        test2: 1\
+      }",
+        test_schema
+      ) !== undefined,
+      "basic message",
+      "basic message should not return undefined"
+    );
+  },
   () => {},
   () => {},
 ];

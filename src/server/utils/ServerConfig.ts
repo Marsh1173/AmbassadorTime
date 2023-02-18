@@ -14,5 +14,6 @@ export const DEFAULT_SERVER_CONFIG: ServerConfig = {
 
 export const DEV_SERVER_CONFIG: ServerConfig = {
   ...DEFAULT_SERVER_CONFIG,
+  client_timeout_limit: 0,
   is_development: true,
 };

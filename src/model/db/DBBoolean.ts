@@ -1,1 +1,4 @@
-export type DBBoolean = 0 | 1;
+export enum DBBoolean {
+  True = 1,
+  False = 0,
+}

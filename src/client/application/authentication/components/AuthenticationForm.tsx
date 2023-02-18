@@ -44,10 +44,15 @@ export class AuthenticationForm extends Component<
           this.on_submit(ev);
         }}
       >
-        <h1 className="title">Sign in</h1>
+        <h1 className="title">
+          Executive Events
+          <br />
+          Ambassador Time Log
+        </h1>
         <input
           name="username"
           type={"text"}
+          value={this.state.username}
           onChange={this.handleInputChange}
           placeholder={"Username"}
         />

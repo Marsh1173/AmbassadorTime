@@ -1,10 +1,14 @@
+import { test_log_database } from "../server/database/logs/LogDao.spec";
 import { test_user_database } from "../server/database/users/UserDao.spec";
-import { test_msg_parser } from "../server/network/api/utils/MsgParser.spec";
+import { test_msg_parser } from "../server/network/api/utils/parsing/MsgParser.spec";
 import { log_test_output, run_test_group } from "./utils";
 
 const tests: (() => Promise<boolean>)[] = [
   () => {
     return run_test_group(test_user_database, "User Database");
+  },
+  () => {
+    return run_test_group(test_log_database, "Log Database");
   },
   () => {
     return run_test_group(test_msg_parser, "Message Parser");
