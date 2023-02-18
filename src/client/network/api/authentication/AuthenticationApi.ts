@@ -1,7 +1,7 @@
-import { SuccessfulLogin } from "./SuccessfulLogin";
-import { UnsuccessfulLogin } from "./UnsuccessfuLogin";
+import { FailureMsg } from "../Failure";
+import { SuccessfulLoginMsg } from "./SuccessfulLogin";
 
 export interface ServerAuthenticationMessage {
   type: "ServerAuthenticationMessage";
-  msg: UnsuccessfulLogin | SuccessfulLogin;
+  msg: FailureMsg | SuccessfulLoginMsg;
 }

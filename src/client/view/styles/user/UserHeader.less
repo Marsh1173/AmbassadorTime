@@ -1,0 +1,25 @@
+.UserHeader {
+  .bordered (@light-gray);
+
+  border-width: 0px 0px 2px 0px;
+  width: 100%;
+
+  .width-container {
+    flex-direction: row;
+    justify-content: flex-start;
+    .padding;
+
+    @media screen and (max-width: calc(@small-screen-bp)) {
+      .padding-small;
+    }
+
+    max-width: @max-screen-width;
+    width: 100%;
+    .logo {
+      .big-text;
+      .title-text;
+      .no-select;
+      color: @uvu-green;
+    }
+  }
+}

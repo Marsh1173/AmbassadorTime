@@ -1,4 +1,20 @@
-.UserView {
+.AdminView,
+.LoggerView,
+.NoPermsView {
   width: 100vw;
   height: 100vh;
+
+  .page-content {
+    width: 100%;
+    max-width: @max-screen-width;
+
+    flex-direction: row;
+
+    .padding-small;
+
+    @media screen and (max-width: calc(@small-screen-bp)) {
+      flex-direction: column;
+      padding: 0px;
+    }
+  }
 }

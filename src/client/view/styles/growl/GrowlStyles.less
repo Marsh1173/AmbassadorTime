@@ -1,0 +1,76 @@
+#growl-dom {
+  &,
+  * {
+    .no-select;
+  }
+
+  @opacity: 1;
+  @width: 350px;
+
+  z-index: 3;
+
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  flex-direction: column-reverse;
+  .gap;
+
+  pointer-events: none;
+  user-select: none;
+
+  .growl {
+    min-width: @width;
+    max-width: @width;
+
+    justify-content: center;
+    .rounded-half;
+    .padding-small;
+
+    &.bad {
+      background-color: rgba(@red, @opacity);
+    }
+    &.neutral {
+      background-color: rgba(@dark-gray, @opacity);
+    }
+    &.good {
+      background-color: rgba(@uvu-green, @opacity);
+    }
+    span {
+      opacity: 0.7;
+      color: @white;
+
+      .mid-text;
+      text-align: center;
+    }
+
+    animation-name: fadeout;
+    // animation-duration: 4s;
+    animation-fill-mode: forwards;
+    // animation-delay: 1s;
+    animation-timing-function: ease-out;
+  }
+}
+
+@keyframes fadeout {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  4% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  60% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 0;
+    height: min-content;
+  }
+  100% {
+    height: 0px;
+    opacity: 0;
+  }
+}

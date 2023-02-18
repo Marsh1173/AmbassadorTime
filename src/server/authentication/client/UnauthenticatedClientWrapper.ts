@@ -1,9 +1,6 @@
 import { UserData } from "../../../model/db/UserModel";
 import { AttemptLoginMsg } from "../../network/api/authentication/AttemptLogin";
-import {
-  ClientMessage,
-  ClientMessageNotImplemented,
-} from "../../network/api/ServerApi";
+import { ClientMessage, ClientMessageNotImplemented } from "../../network/api/ServerApi";
 import { IClient } from "../../network/client/Client";
 import { ClientWrapper } from "../../network/client/ClientWrapper";
 import { IAuthenticationService } from "../AuthenticationService";
@@ -38,35 +35,28 @@ export class UnauthenticatedClientWrapper extends ClientWrapper {
   }
 
   private attempt_login(msg: AttemptLoginMsg) {
-    let validation_results: ValidateLoginReturnMsg =
-      this.auth_service.client_validator.attempt_validate_client_login(
-        msg.user_id,
-        msg.password
-      );
+    let validation_results: ValidateLoginReturnMsg = this.auth_service.client_validator.attempt_validate_client_login(
+      msg.user_id,
+      msg.password
+    );
 
     if (!validation_results.success) {
       this.send_unsuccessful_login(validation_results.msg);
       return;
     }
 
-    console.log(
-      "Successfully authenticated user " +
-        validation_results.user_data.displayname
-    );
+    console.log("Successfully authenticated user " + validation_results.user_data.displayname);
     this.send_successful_login(validation_results.user_data);
 
     let client: IClient = this.deconstruct();
-    this.auth_service.server_app.user_service.user_client_map.attach_client(
-      client,
-      validation_results.user_data
-    );
+    this.auth_service.server_app.user_service.user_client_map.attach_client(client, validation_results.user_data);
   }
 
   private send_unsuccessful_login(msg: string) {
     this.send({
       type: "ServerAuthenticationMessage",
       msg: {
-        type: "UnsuccessfulLogin",
+        type: "FailureMsg",
         msg,
       },
     });
@@ -76,7 +66,7 @@ export class UnauthenticatedClientWrapper extends ClientWrapper {
     this.send({
       type: "ServerAuthenticationMessage",
       msg: {
-        type: "SuccessfulLogin",
+        type: "SuccessfulLoginMsg",
         user_data,
       },
     });

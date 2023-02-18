@@ -1,0 +1,51 @@
+.LeftNav {
+  @button-background-opacity: 10%;
+  @definite-width: 250px;
+  min-width: @definite-width;
+  max-width: @definite-width;
+
+  .gap;
+
+  .option {
+    .bordered (@white);
+    .rounded;
+    .padding-tall;
+
+    background-color: fade(@white, 0%);
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+
+    .small-text;
+    .title-text;
+    color: @gray;
+
+    transition: all @fastest-transition;
+
+    &:hover,
+    &.selected {
+      background-color: fade(@gray, @button-background-opacity);
+      color: @dark-gray;
+    }
+
+    &.selected {
+      background-color: fade(@blue, @button-background-opacity);
+      .bordered (@blue);
+    }
+  }
+
+  @media screen and (max-width: calc(@small-screen-bp)) {
+    min-width: 100%;
+    max-width: 100%;
+
+    .gap-small;
+    .option {
+      padding: 7px 10px;
+    }
+
+    .padding-smaller;
+    .bordered (@light-gray);
+    border-width: 0px 0px 2px 0px;
+  }
+}

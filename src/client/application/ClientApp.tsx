@@ -1,42 +1,33 @@
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { ClientConfig } from "../utils/ClientConfig";
-import {
-  AuthenticationView,
-  AuthenticationViewProps,
-} from "./authentication/AuthenticationView";
-import {
-  ConnectionView,
-  ConnectionViewProps,
-} from "./connection/ConnectionView";
+import { AuthenticationView, AuthenticationViewProps } from "./authentication/AuthenticationView";
+import { ConnectionView, ConnectionViewProps } from "./connection/ConnectionView";
 import { DisconnectionView } from "./disconnection/DisconnectionView";
 
 import "../view/styles/MainStyles.less";
-import { UserView, UserViewProps } from "./user/UserView";
+import { UserViewProps } from "./user/UserView";
+import { GrowlService, IGrowlService } from "./growl/GrowlService";
+import { NoPermsView } from "./user/noperms/NoPermsView";
+import { AdminView } from "./user/admin/AdminView";
+import { LoggerView } from "./user/logger/LoggerView";
 
 export type IncompleteProps<PropType> = Omit<PropType, "client_app">;
 
 export interface IClientApp {
+  growl_service: IGrowlService;
   change_state_to_disconnected(msg: string): void;
   change_state_to_connecting(props: IncompleteProps<ConnectionViewProps>): void;
-  change_state_to_authenticating(
-    props: IncompleteProps<AuthenticationViewProps>
-  ): void;
+  change_state_to_authenticating(props: IncompleteProps<AuthenticationViewProps>): void;
   change_state_to_user(props: IncompleteProps<UserViewProps>): void;
 }
 
 export class ClientApp implements IClientApp {
-  public change_state_to_authenticating(
-    props: Omit<AuthenticationViewProps, "client_app">
-  ) {
-    this.root.render(
-      <AuthenticationView props={{ ...props, client_app: this }} />
-    );
+  public change_state_to_authenticating(props: Omit<AuthenticationViewProps, "client_app">) {
+    this.root.render(<AuthenticationView props={{ ...props, client_app: this }} />);
   }
 
-  public change_state_to_connecting(
-    props: IncompleteProps<ConnectionViewProps>
-  ) {
+  public change_state_to_connecting(props: IncompleteProps<ConnectionViewProps>) {
     this.root.render(<ConnectionView props={{ ...props, client_app: this }} />);
   }
 
@@ -45,11 +36,18 @@ export class ClientApp implements IClientApp {
   }
 
   public change_state_to_user(props: IncompleteProps<UserViewProps>) {
-    this.root.render(<UserView props={{ ...props, client_app: this }} />);
+    if (props.user_data.is_admin) {
+      this.root.render(<AdminView props={{ ...props, client_app: this }} />);
+    } else if (props.user_data.is_logger) {
+      this.root.render(<LoggerView props={{ ...props, client_app: this }} />);
+    } else {
+      this.root.render(<NoPermsView />);
+    }
   }
 
   private dom_container: Element;
   private root: Root;
+  public readonly growl_service: IGrowlService;
 
   constructor(private readonly config: ClientConfig) {
     let dom_container: Element | null = document.querySelector("#react-dom");
@@ -61,5 +59,6 @@ export class ClientApp implements IClientApp {
     }
 
     this.change_state_to_connecting({ config: this.config });
+    this.growl_service = new GrowlService();
   }
 }

@@ -16,13 +16,9 @@ export interface AuthenticationViewProps {
 
 export interface AuthenticationViewState {
   submitted: boolean;
-  errors: string[];
 }
 
-export class AuthenticationView extends Component<
-  { props: AuthenticationViewProps },
-  AuthenticationViewState
-> {
+export class AuthenticationView extends Component<{ props: AuthenticationViewProps }, AuthenticationViewState> {
   private readonly auth_stw: AuthenticatorServerTalkerWrapper;
 
   constructor(props: { props: AuthenticationViewProps }) {
@@ -30,7 +26,6 @@ export class AuthenticationView extends Component<
 
     this.state = {
       submitted: false,
-      errors: [],
     };
 
     this.auth_stw = new AuthenticatorServerTalkerWrapper(
@@ -39,33 +34,17 @@ export class AuthenticationView extends Component<
       this
     );
 
-    this.show_errors = this.show_errors.bind(this);
     this.set_submitted = this.set_submitted.bind(this);
     this.on_attempt_login = this.on_attempt_login.bind(this);
     this.on_successful_login = this.on_successful_login.bind(this);
   }
 
   public render() {
-    let error_spans: JSX.Element[] = this.state.errors.map((error) => {
-      return (
-        <span className="error" key={error}>
-          {error}
-        </span>
-      );
-    });
     return (
       <div className="AuthenticationView">
-        <AuthenticationForm
-          on_submit={this.on_attempt_login}
-          submitted={this.state.submitted}
-        ></AuthenticationForm>
-        {error_spans}
+        <AuthenticationForm on_submit={this.on_attempt_login} submitted={this.state.submitted}></AuthenticationForm>
       </div>
     );
-  }
-
-  public show_errors(errors: string[]) {
-    this.setState({ errors });
   }
 
   public set_submitted(val: boolean) {
@@ -75,13 +54,7 @@ export class AuthenticationView extends Component<
   private last_attempted_username: string = "";
   private last_attempted_password: string = "";
   private on_attempt_login(username: string, password: string) {
-    this.show_errors([]);
-
-    let frontend_errs: string[] =
-      LoginValidator.front_end_validate_username_and_password(
-        username,
-        password
-      );
+    let frontend_errs: string[] = LoginValidator.front_end_validate_username_and_password(username, password);
 
     if (frontend_errs.length === 0) {
       this.set_submitted(true);
@@ -89,16 +62,16 @@ export class AuthenticationView extends Component<
       this.last_attempted_password = password;
       this.auth_stw.send_login(username, password);
     } else {
-      this.show_errors(frontend_errs);
+      for (const err of frontend_errs) {
+        this.props.props.client_app.growl_service.put_growl(err, "bad");
+      }
     }
   }
 
   public on_successful_login(user_data: UserData) {
     let server_talker: IServerTalker = this.auth_stw.deconstruct();
-    SaveSuccessfulLogin.save_successful_login(
-      this.last_attempted_username,
-      this.last_attempted_password
-    );
+    SaveSuccessfulLogin.save_successful_login(this.last_attempted_username, this.last_attempted_password);
+    this.props.props.client_app.growl_service.put_growl("Welcome, " + user_data.displayname + "!", "good");
     this.props.props.client_app.change_state_to_user({
       user_data,
       server_talker,

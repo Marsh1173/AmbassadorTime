@@ -3,6 +3,8 @@ import { IClientApp } from "../application/ClientApp";
 import { IServerTalker } from "./ServerTalker";
 import { ClientMessage } from "../../server/network/api/ServerApi";
 import { ServerMessage } from "./api/ClientApi";
+import { FailureMsg } from "./api/Failure";
+import { SuccessMsg } from "./api/user/Success";
 
 export interface IServerTalkerWrapper extends HasId {
   receive_message: (msg: ServerMessage) => void;
@@ -14,10 +16,7 @@ export abstract class ServerTalkerWrapper implements IServerTalkerWrapper {
   public readonly id: Id;
   protected is_deconstructed: boolean = false;
 
-  constructor(
-    private readonly server_talker: IServerTalker,
-    private readonly client_app: IClientApp
-  ) {
+  constructor(private readonly server_talker: IServerTalker, private readonly client_app: IClientApp) {
     this.id = make_id();
     this.server_talker.add_observer(this);
   }
@@ -41,5 +40,13 @@ export abstract class ServerTalkerWrapper implements IServerTalkerWrapper {
     this.server_talker.remove_observer(this.id);
 
     return this.server_talker;
+  }
+
+  protected handle_failure_msg(msg: FailureMsg) {
+    this.client_app.growl_service.put_growl(msg.msg, "bad");
+  }
+
+  protected handle_success_msg(msg: SuccessMsg) {
+    this.client_app.growl_service.put_growl(msg.msg, "good");
   }
 }

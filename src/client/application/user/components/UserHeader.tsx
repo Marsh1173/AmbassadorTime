@@ -9,7 +9,9 @@ export class UserHeader extends Component<{}, {}> {
   public render() {
     return (
       <div className="UserHeader">
-        <span className="logo">Ambassador Time Log</span>
+        <div className="width-container">
+          <span className="logo">Ambassador Time Log</span>
+        </div>
       </div>
     );
   }

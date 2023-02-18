@@ -1,9 +1,12 @@
+import { ServerAdminMessage } from "./admin/AdminApi.ts";
 import { ServerAuthenticationMessage } from "./authentication/AuthenticationApi";
+import { ServerLoggerMessage } from "./logger/LoggerApi";
 
 export class ServerMessageNotImplemented extends Error {
   constructor(server_msg: any) {
-    super("Server message not implemented yet: " + server_msg.toString());
+    console.log(server_msg);
+    super("Server message not implemented yet.");
   }
 }
 
-export type ServerMessage = ServerAuthenticationMessage;
+export type ServerMessage = ServerAuthenticationMessage | ServerAdminMessage | ServerLoggerMessage;
