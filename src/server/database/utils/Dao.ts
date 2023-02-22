@@ -1,19 +1,8 @@
 import Sqlite3 from "better-sqlite3";
-
-export type ReturnMsg = SuccessMsg | FailureMsg;
-
-export interface SuccessMsg {
-  success: true;
-}
-
-export interface FailureMsg {
-  success: false;
-  msg: string;
-}
+import { ReturnMsg, FailureMsg } from "../../utils/ReturnMsg";
 
 export abstract class DAO {
-  public static readonly database_path: string =
-    "src/server/database/utils/database.db";
+  public static readonly database_path: string = "src/server/database/utils/database.db";
 
   constructor() {}
 

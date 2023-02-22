@@ -9,23 +9,18 @@ export interface ConnectionViewProps {
   config: ClientConfig;
 }
 
-export class ConnectionView extends Component<
-  { props: ConnectionViewProps },
-  {}
-> {
+export class ConnectionView extends Component<{ props: ConnectionViewProps }, {}> {
   public render() {
-    let server_talker: IServerTalker = new ServerTalker(
-      this.props.props.config,
-      (server_talker: IServerTalker) => {
-        this.props.props.client_app.change_state_to_authenticating({
-          server_talker,
-        });
-      }
-    );
+    new ServerTalker(this.props.props.config, (server_talker: IServerTalker) => {
+      this.props.props.client_app.change_state_to_authenticating({
+        server_talker,
+      });
+    });
 
     return (
       <div>
         <span>Connecting...</span>
+        <span>If you cannot connect, reach out to natehroylance@gmail.com</span>
       </div>
     );
   }

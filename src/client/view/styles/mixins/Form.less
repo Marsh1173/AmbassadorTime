@@ -1,0 +1,30 @@
+.form (@submit-color: @uvu-green) {
+  .flex;
+  .padding;
+  .gap;
+
+  .title {
+    .title-text;
+    .big-text;
+  }
+
+  input:not([type="submit"]) {
+    .padding-smaller;
+    .mid-text;
+    .regular-text;
+    .rounded;
+    .bordered;
+  }
+
+  input[type="submit"] {
+    &:not(:disabled) {
+      .shadowed-button (@color: @submit-color);
+    }
+    &:disabled {
+      .shadowed-button (@color: @gray);
+    }
+    .rounded;
+    .padding-smaller;
+    .big-text;
+  }
+}

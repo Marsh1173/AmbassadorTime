@@ -1,16 +1,14 @@
-import { DAO, FailureMsg, ReturnMsg, SuccessMsg } from "../utils/Dao";
 import BetterSqlite3 from "better-sqlite3";
 import { LogId, LogModel } from "../../../model/db/LogModel";
 import { HasId, make_id } from "../../../model/utils/Id";
 import { UserId } from "../../../model/db/UserModel";
 import { ValidateLog } from "./utils/ValidateLog";
+import { FailureMsg, ReturnMsg, Success } from "../../utils/ReturnMsg";
+import { DAO } from "../utils/Dao";
 
 export const user_does_not_exist: string = "User does not exist";
 
-export const create_log_table_string = (
-  table_name: string,
-  user_table_name: string
-) => {
+export const create_log_table_string = (table_name: string, user_table_name: string) => {
   return `CREATE TABLE '${table_name}' (\
     'id' VARCHAR(50) PRIMARY KEY NOT NULL,\
     'short_description' VARCHAR(30) NOT NULL,\
@@ -24,10 +22,7 @@ export const create_log_table_string = (
 
 export interface ILogDao {
   create_log(
-    data: Pick<
-      LogModel,
-      "short_description" | "target_date_time_ms" | "minutes_logged" | "user_id"
-    >
+    data: Pick<LogModel, "short_description" | "target_date_time_ms" | "minutes_logged" | "user_id">
   ): LogSuccess | FailureMsg;
   delete_log(id: LogId): ReturnMsg;
   edit_log(log_data: Partial<LogModel> & HasId): LogSuccess | FailureMsg;
@@ -35,11 +30,11 @@ export interface ILogDao {
   get_all_logs(): FetchLogBatchSuccess | FailureMsg;
 }
 
-export interface LogSuccess extends SuccessMsg {
+export interface LogSuccess extends Success {
   log: LogModel;
 }
 
-export interface FetchLogBatchSuccess extends SuccessMsg {
+export interface FetchLogBatchSuccess extends Success {
   logs: LogModel[];
 }
 
@@ -51,27 +46,20 @@ export class LogDao extends DAO implements ILogDao {
   private readonly get_user_logs_statement: BetterSqlite3.Statement<any[]>;
   private readonly get_all_logs_statement: BetterSqlite3.Statement<any[]>;
 
-  constructor(
-    private readonly db: BetterSqlite3.Database,
-    private readonly table_name: string = "logs"
-  ) {
+  constructor(private readonly db: BetterSqlite3.Database, private readonly table_name: string = "logs") {
     super();
 
     this.insert_log_statement = this.db.prepare(
       `INSERT INTO ${this.table_name} (id, short_description, target_date_time_ms, minutes_logged, time_logged_ms, user_id) VALUES (?, ?, ?, ?, ?, ?);`
     );
 
-    this.delete_log_statement = this.db.prepare(
-      `DELETE FROM ${this.table_name} WHERE id = ?`
-    );
+    this.delete_log_statement = this.db.prepare(`DELETE FROM ${this.table_name} WHERE id = ?`);
 
     this.edit_log_statement = this.db.prepare(
       `UPDATE ${this.table_name} SET short_description = ?, target_date_time_ms = ?, minutes_logged = ?, time_logged_ms = ? WHERE id = ?`
     );
 
-    this.get_log_statement = this.db.prepare(
-      `SELECT * FROM ${this.table_name} WHERE id = ?;`
-    );
+    this.get_log_statement = this.db.prepare(`SELECT * FROM ${this.table_name} WHERE id = ?;`);
 
     this.get_user_logs_statement = this.db.prepare(
       `SELECT * FROM ${this.table_name} WHERE user_id = ? ORDER BY target_date_time_ms DESC;`
@@ -83,18 +71,12 @@ export class LogDao extends DAO implements ILogDao {
   }
 
   public create_log(
-    data: Pick<
-      LogModel,
-      "short_description" | "target_date_time_ms" | "minutes_logged" | "user_id"
-    >
+    data: Pick<LogModel, "short_description" | "target_date_time_ms" | "minutes_logged" | "user_id">
   ): LogSuccess | FailureMsg {
     return this.catch_database_errors_get<LogSuccess>(() => {
       let now: number = Date.now();
 
-      let validate_log_results: ReturnMsg = ValidateLog.validate_log(
-        now,
-        data.target_date_time_ms
-      );
+      let validate_log_results: ReturnMsg = ValidateLog.validate_log(now, data.target_date_time_ms);
       if (!validate_log_results.success) {
         return validate_log_results;
       }
@@ -119,9 +101,7 @@ export class LogDao extends DAO implements ILogDao {
     });
   }
 
-  public edit_log(
-    log_data: Partial<LogModel> & HasId
-  ): LogSuccess | FailureMsg {
+  public edit_log(log_data: Partial<LogModel> & HasId): LogSuccess | FailureMsg {
     return this.catch_database_errors_get<LogSuccess>(() => {
       let get_log_results: LogSuccess | FailureMsg = this.get_log(log_data.id);
       if (!get_log_results.success) {

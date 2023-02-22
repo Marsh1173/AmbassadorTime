@@ -10,18 +10,17 @@ export interface AuthenticationFormProps {
 export interface AuthenticationFormState {
   username: string;
   password: string;
+  has_necessary_info: boolean;
 }
 
-export class AuthenticationForm extends Component<
-  AuthenticationFormProps,
-  AuthenticationFormState
-> {
+export class AuthenticationForm extends Component<AuthenticationFormProps, AuthenticationFormState> {
   constructor(props: AuthenticationFormProps) {
     super(props);
-    this.state = { username: "", password: "" };
+    this.state = { username: "", password: "", has_necessary_info: false };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.on_submit = this.on_submit.bind(this);
+    this.update_has_necessary_info = this.update_has_necessary_info.bind(this);
   }
 
   private handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -30,9 +29,9 @@ export class AuthenticationForm extends Component<
     const name = target.name;
 
     if (name === "username") {
-      this.setState({ username: value });
+      this.setState({ username: value }, this.update_has_necessary_info);
     } else if (name === "password") {
-      this.setState({ password: value });
+      this.setState({ password: value }, this.update_has_necessary_info);
     }
   }
 
@@ -66,7 +65,7 @@ export class AuthenticationForm extends Component<
         <input
           type={"submit"}
           value={this.props.submitted ? "Signing in..." : "Sign in"}
-          disabled={this.props.submitted}
+          disabled={this.props.submitted || !this.state.has_necessary_info}
         />
       </form>
     );
@@ -74,15 +73,26 @@ export class AuthenticationForm extends Component<
 
   public componentDidMount(): void {
     FetchStoredLogin.fetch((last_used_username, last_used_password) => {
-      this.setState({
-        username: last_used_username,
-        password: last_used_password,
-      });
+      this.setState(
+        {
+          username: last_used_username,
+          password: last_used_password,
+        },
+        this.update_has_necessary_info
+      );
     });
   }
 
   private on_submit(ev: FormEvent) {
     ev.preventDefault();
     this.props.on_submit(this.state.username, this.state.password);
+  }
+
+  private update_has_necessary_info() {
+    if (this.state.username !== "" && this.state.password !== "") {
+      this.setState({ has_necessary_info: true });
+    } else {
+      this.setState({ has_necessary_info: false });
+    }
   }
 }

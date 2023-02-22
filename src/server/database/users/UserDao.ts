@@ -1,13 +1,12 @@
 import BetterSqlite3 from "better-sqlite3";
 import { HashAndSalt, PasswordService } from "./utils/PasswordService";
-import { DAO, FailureMsg, ReturnMsg, SuccessMsg } from "../utils/Dao";
+import { DAO } from "../utils/Dao";
+import { FailureMsg, Success } from "../../utils/ReturnMsg";
+import { ReturnMsg } from "../../utils/ReturnMsg";
 import { UserData, UserModel, UserId } from "../../../model/db/UserModel";
 import { ValidateDisplayName } from "./utils/ValidateDisplayName";
 import { ValidateUserId } from "./utils/ValidateUserId";
-import {
-  ValidateLoginReturnMsg,
-  ValidateLoginSuccess,
-} from "../../authentication/utils/ClientValidator";
+import { ValidateLoginReturnMsg, ValidateLoginSuccess } from "../../authentication/utils/ClientValidator";
 
 export const userid_taken_string: string = "User id already taken";
 
@@ -22,18 +21,18 @@ export const create_user_table_string = (table_name: string) => {
     );`;
 };
 
+export interface FetchLoggersSuccess extends Success {
+  users: UserData[];
+}
+
 export interface IUserDao {
-  register_user(
-    data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">
-  ): ReturnMsg;
-  validate_login(
-    data: Pick<UserModel, "id" | "password">
-  ): ValidateLoginReturnMsg;
+  register_user(data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">): ReturnMsg;
+  validate_login(data: Pick<UserModel, "id" | "password">): ValidateLoginReturnMsg;
   promote_logger(data: UserId): ReturnMsg;
   demote_admin_logger(data: UserId): ReturnMsg;
   is_admin(data: UserId): ReturnMsg;
   is_logger(data: UserId): ReturnMsg;
-  get_logger_list(): UserData[] | ReturnMsg;
+  fetch_logger_list(): FetchLoggersSuccess | FailureMsg;
   change_user_password(new_password: string, user_id: UserId): ReturnMsg;
   delete_user(user_id: UserId): ReturnMsg;
 }
@@ -46,47 +45,30 @@ export class UserDao extends DAO implements IUserDao {
   private readonly update_password: BetterSqlite3.Statement<any[]>;
   private readonly delete_user_statement: BetterSqlite3.Statement<any[]>;
 
-  constructor(
-    private readonly db: BetterSqlite3.Database,
-    private readonly table_name: string = "users"
-  ) {
+  constructor(private readonly db: BetterSqlite3.Database, private readonly table_name: string = "users") {
     super();
 
-    this.get_user_data = this.db.prepare(
-      `SELECT id, displayname, is_logger, is_admin FROM ${this.table_name};`
-    );
+    this.get_user_data = this.db.prepare(`SELECT id, displayname, is_logger, is_admin FROM ${this.table_name};`);
 
     this.insert_user = this.db.prepare(
       `INSERT INTO ${this.table_name} (id, displayname, password, salt, is_logger, is_admin) VALUES (?, ?, ?, ?, ?, ?);`
     );
 
-    this.get_user = this.db.prepare(
-      `SELECT * FROM ${this.table_name} WHERE id = ?;`
-    );
+    this.get_user = this.db.prepare(`SELECT * FROM ${this.table_name} WHERE id = ?;`);
 
-    this.update_is_admin = this.db.prepare(
-      `UPDATE ${this.table_name} SET is_admin = ? WHERE id = ?`
-    );
+    this.update_is_admin = this.db.prepare(`UPDATE ${this.table_name} SET is_admin = ? WHERE id = ?`);
 
-    this.update_password = this.db.prepare(
-      `UPDATE ${this.table_name} SET password = ?, salt = ? WHERE id = ?`
-    );
+    this.update_password = this.db.prepare(`UPDATE ${this.table_name} SET password = ?, salt = ? WHERE id = ?`);
 
-    this.delete_user_statement = this.db.prepare(
-      `DELETE FROM ${this.table_name} WHERE id = ?`
-    );
+    this.delete_user_statement = this.db.prepare(`DELETE FROM ${this.table_name} WHERE id = ?`);
   }
 
-  public register_user(
-    data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">
-  ): ReturnMsg {
+  public register_user(data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">): ReturnMsg {
     let validate_user_id_results: ReturnMsg = ValidateUserId.validate(data.id);
     if (!validate_user_id_results.success) {
       return validate_user_id_results;
     }
-    let validate_display_name_results: ReturnMsg = ValidateDisplayName.validate(
-      data.displayname
-    );
+    let validate_display_name_results: ReturnMsg = ValidateDisplayName.validate(data.displayname);
     if (!validate_display_name_results.success) {
       return validate_display_name_results;
     }
@@ -105,9 +87,7 @@ export class UserDao extends DAO implements IUserDao {
     }, new Map([["SQLITE_CONSTRAINT_PRIMARYKEY", userid_taken_string]]));
   }
 
-  public validate_login(
-    data: Pick<UserModel, "password" | "id">
-  ): ValidateLoginReturnMsg {
+  public validate_login(data: Pick<UserModel, "password" | "id">): ValidateLoginReturnMsg {
     return this.catch_database_errors_get<ValidateLoginSuccess>(() => {
       const failed_attempt: FailureMsg = {
         success: false,
@@ -119,10 +99,10 @@ export class UserDao extends DAO implements IUserDao {
         return failed_attempt;
       }
 
-      let valid_password: boolean = PasswordService.check_password(
-        data.password,
-        { hash: user_model.password, salt: user_model.salt }
-      );
+      let valid_password: boolean = PasswordService.check_password(data.password, {
+        hash: user_model.password,
+        salt: user_model.salt,
+      });
 
       if (valid_password) {
         return {
@@ -196,32 +176,25 @@ export class UserDao extends DAO implements IUserDao {
     });
   }
 
-  public get_logger_list(): UserData[] | ReturnMsg {
-    return this.catch_database_errors_get<UserData[]>(() => {
-      return (this.get_user_data.all() as UserData[]).filter(
-        (user) => user.is_logger === 1
-      );
+  public fetch_logger_list(): FetchLoggersSuccess | FailureMsg {
+    return this.catch_database_errors_get<FetchLoggersSuccess>(() => {
+      return { success: true, users: (this.get_user_data.all() as UserData[]).filter((user) => user.is_logger === 1) };
     });
   }
 
-  public change_user_password(
-    new_password: string,
-    user_id: UserId
-  ): ReturnMsg {
+  public change_user_password(new_password: string, user_id: UserId): ReturnMsg {
     return this.catch_database_errors_run(() => {
-      let password_validation: ReturnMsg =
-        PasswordService.validate_new_password(new_password);
-      if (!password_validation.success) {
-        return password_validation;
-      }
-
       let user_model: UserModel | undefined = this.get_user.get(user_id);
       if (user_model === undefined) {
         return { success: false, msg: "User not found" };
       }
 
-      let hash_and_salt: HashAndSalt =
-        PasswordService.hash_password(new_password);
+      let password_validation: ReturnMsg = PasswordService.validate_new_password(new_password);
+      if (!password_validation.success) {
+        return password_validation;
+      }
+
+      let hash_and_salt: HashAndSalt = PasswordService.hash_password(new_password);
       this.update_password.run(hash_and_salt.hash, hash_and_salt.salt, user_id);
       return { success: true };
     });

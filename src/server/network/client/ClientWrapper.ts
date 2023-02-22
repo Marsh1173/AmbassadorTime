@@ -4,15 +4,13 @@ import { ServerMessage } from "../../../client/network/api/ClientApi";
 import { IClient } from "./Client";
 import { ClientMap } from "./ClientMap";
 import { UserId } from "../../../model/db/UserModel";
+import { ReturnMsg } from "../../utils/ReturnMsg";
 
 export abstract class ClientWrapper implements HasId {
   public readonly id: Id;
   protected is_deconstructed: boolean = false;
 
-  constructor(
-    private readonly client: IClient,
-    private readonly client_map: ClientMap<ClientWrapper>
-  ) {
+  constructor(private readonly client: IClient, private readonly client_map: ClientMap<ClientWrapper>) {
     this.id = make_id();
     this.client.add_observer(this);
   }
@@ -39,5 +37,25 @@ export abstract class ClientWrapper implements HasId {
     this.client_map.disconnect_client(this.id);
 
     return this.client;
+  }
+
+  protected communicate_success_or_failure_action(msg: ReturnMsg) {
+    if (msg.success) {
+      this.send({
+        type: "ServerUserMessage",
+        msg: {
+          type: "SuccessMsg",
+          msg: "Success!",
+        },
+      });
+    } else {
+      this.send({
+        type: "ServerUserMessage",
+        msg: {
+          type: "FailureMsg",
+          msg: msg.msg,
+        },
+      });
+    }
   }
 }

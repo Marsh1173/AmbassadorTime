@@ -1,14 +1,10 @@
 import Sqlite3, { Database } from "better-sqlite3";
 import { assert } from "../../../test/assert";
-import { ReturnMsg } from "../utils/Dao";
-import {
-  create_user_table_string,
-  IUserDao,
-  UserDao,
-  userid_taken_string,
-} from "./UserDao";
+import { create_user_table_string, IUserDao, UserDao, userid_taken_string } from "./UserDao";
 import { UserData } from "../../../model/db/UserModel";
 import { DBBoolean } from "../../../model/db/DBBoolean";
+import { FailureMsg, ReturnMsg } from "../../utils/ReturnMsg";
+import { PasswordService } from "./utils/PasswordService";
 
 const test_users_table_name: string = "test_users";
 
@@ -49,7 +45,7 @@ export const test_user_database = async () => {
   change_password(user_dao);
   delete_users(user_dao);
 
-  // attempt_drop_table(test_users_table_name, db);
+  attempt_drop_table(test_users_table_name, db);
 };
 
 const attempt_drop_table = (name: string, db: Database) => {
@@ -69,11 +65,7 @@ const register_users = (user_dao: IUserDao) => {
     is_logger: DBBoolean.True,
     is_admin: DBBoolean.False,
   });
-  assert(
-    register_results.success,
-    `register_users true`,
-    `${register_results.success} should equal true`
-  );
+  assert(register_results.success, `register_users true`, `${register_results.success} should equal true`);
 
   register_results = user_dao.register_user({
     id: "Marshers",
@@ -81,11 +73,7 @@ const register_users = (user_dao: IUserDao) => {
     is_logger: DBBoolean.True,
     is_admin: DBBoolean.False,
   });
-  assert(
-    register_results.success,
-    `register_users second user true`,
-    `${register_results.success} should equal true`
-  );
+  assert(register_results.success, `register_users second user true`, `${register_results.success} should equal true`);
 
   register_results = user_dao.register_user({
     id: "Marshers",
@@ -112,11 +100,7 @@ const register_users = (user_dao: IUserDao) => {
     is_logger: DBBoolean.True,
     is_admin: DBBoolean.False,
   });
-  assert(
-    !register_results.success,
-    `register_users empty user id`,
-    `${register_results.success} should equal false`
-  );
+  assert(!register_results.success, `register_users empty user id`, `${register_results.success} should equal false`);
 
   register_results = user_dao.register_user({
     id: " ",
@@ -204,11 +188,8 @@ const register_users = (user_dao: IUserDao) => {
 };
 
 const get_logger_list = (user_dao: IUserDao) => {
-  let expected_logger_list: string = JSON.stringify([
-    user_datas[0],
-    user_datas[1],
-  ]);
-  let logger_list: string = JSON.stringify(user_dao.get_logger_list());
+  let expected_logger_list: string = JSON.stringify([user_datas[0], user_datas[1]]);
+  let logger_list: string = JSON.stringify(user_dao.fetch_logger_list());
   assert(
     logger_list === expected_logger_list,
     `get_logger_list`,
@@ -221,15 +202,9 @@ const validate_login = (user_dao: IUserDao) => {
     id: "Naters",
     password: "password",
   });
+  assert(validation_results.success, "validate_login true", `${validation_results.success} should be true`);
   assert(
-    validation_results.success,
-    "validate_login true",
-    `${validation_results.success} should be true`
-  );
-  assert(
-    validation_results.success &&
-      JSON.stringify(user_datas[0]) ===
-        JSON.stringify(validation_results.user_data),
+    validation_results.success && JSON.stringify(user_datas[0]) === JSON.stringify(validation_results.user_data),
     "validate_login correct user data",
     `User data should be ${JSON.stringify(user_datas[0])}`
   );
@@ -267,18 +242,10 @@ const validate_login = (user_dao: IUserDao) => {
 
 const promote_logger = (user_dao: IUserDao) => {
   let promotion_results: ReturnMsg = user_dao.promote_logger("Naters");
-  assert(
-    promotion_results.success,
-    "promote_logger true",
-    `${promotion_results.success} should be true.`
-  );
+  assert(promotion_results.success, "promote_logger true", `${promotion_results.success} should be true.`);
 
   let is_admin_results: ReturnMsg = user_dao.is_admin("Naters");
-  assert(
-    is_admin_results.success,
-    "is_admin true",
-    `${is_admin_results.success} should be true.`
-  );
+  assert(is_admin_results.success, "is_admin true", `${is_admin_results.success} should be true.`);
 
   promotion_results = user_dao.promote_logger("non-existent-user");
   assert(
@@ -288,27 +255,15 @@ const promote_logger = (user_dao: IUserDao) => {
   );
 
   promotion_results = user_dao.promote_logger("nonlogger");
-  assert(
-    !promotion_results.success,
-    "promote_logger non-logger user",
-    `${promotion_results.success} should be false.`
-  );
+  assert(!promotion_results.success, "promote_logger non-logger user", `${promotion_results.success} should be false.`);
 };
 
 const demote_admin_logger = (user_dao: IUserDao) => {
   let demotion_results: ReturnMsg = user_dao.demote_admin_logger("Naters");
-  assert(
-    demotion_results.success,
-    "demote_admin_logger true",
-    `${demotion_results.success} should be true.`
-  );
+  assert(demotion_results.success, "demote_admin_logger true", `${demotion_results.success} should be true.`);
 
   let isnt_admin_results: ReturnMsg = user_dao.is_admin("Naters");
-  assert(
-    !isnt_admin_results.success,
-    "is_admin false",
-    `${isnt_admin_results.success} should be false.`
-  );
+  assert(!isnt_admin_results.success, "is_admin false", `${isnt_admin_results.success} should be false.`);
 
   demotion_results = user_dao.demote_admin_logger("Naters");
   assert(
@@ -333,34 +288,28 @@ const demote_admin_logger = (user_dao: IUserDao) => {
 };
 
 const change_password = (user_dao: IUserDao) => {
-  let change_password_results: ReturnMsg = user_dao.change_user_password(
-    "newpassword",
-    "Naters"
-  );
-  assert(
-    change_password_results.success,
-    "change_password true",
-    `${change_password_results.success} should be true.`
-  );
+  let change_password_results: ReturnMsg = user_dao.change_user_password("newpassword", "Naters");
+  assert(change_password_results.success, "change_password true", `${change_password_results.success} should be true.`);
 
   change_password_results = user_dao.change_user_password("", "Naters");
   assert(
-    !change_password_results.success,
+    !change_password_results.success && change_password_results.msg === PasswordService.errs.not_empty,
     "change_password bad password empty",
-    `${change_password_results.success} should be false.`
+    `${change_password_results.success} should be false and message should say what's wrong (it says ${
+      (change_password_results as FailureMsg).msg
+    }).`
   );
 
   change_password_results = user_dao.change_user_password(" ", "Naters");
   assert(
-    !change_password_results.success,
+    !change_password_results.success && change_password_results.msg === PasswordService.errs.no_spaces,
     "change_password bad password space",
-    `${change_password_results.success} should be false.`
+    `${change_password_results.success} should be false and message should say what's wrong (it says ${
+      (change_password_results as FailureMsg).msg
+    }).`
   );
 
-  change_password_results = user_dao.change_user_password(
-    "newpassword",
-    "naters"
-  );
+  change_password_results = user_dao.change_user_password("newpassword", "naters");
   assert(
     !change_password_results.success,
     "change_password non-existent user",
@@ -380,11 +329,7 @@ const change_password = (user_dao: IUserDao) => {
 
 const delete_users = (user_dao: IUserDao) => {
   let delete_results: ReturnMsg = user_dao.delete_user("Naters");
-  assert(
-    delete_results.success,
-    "delete_users true",
-    `${delete_results.success} should be true`
-  );
+  assert(delete_results.success, "delete_users true", `${delete_results.success} should be true`);
 
   let validation_results = user_dao.validate_login({
     id: "Naters",

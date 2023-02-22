@@ -1,17 +1,11 @@
-import { ReturnMsg } from "../../utils/Dao";
+import { ReturnMsg } from "../../../utils/ReturnMsg";
 import { DisplayNameMaxLength } from "../../../../model/db/UserModel";
 
 export abstract class ValidateDisplayName {
   public static validate(display_name: string): ReturnMsg {
     if (display_name === "") {
       return { success: false, msg: "Display name cannot be empty" };
-    } else if (
-      display_name !==
-      display_name.replace(
-        ValidateDisplayName.letters_or_white_spaces_regex,
-        ""
-      )
-    ) {
+    } else if (display_name !== display_name.replace(ValidateDisplayName.letters_or_white_spaces_regex, "")) {
       return {
         success: false,
         msg: "Display name can only contain letters and spaces",

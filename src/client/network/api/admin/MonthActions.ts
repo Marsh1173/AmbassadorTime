@@ -1,6 +1,6 @@
-import { UserData } from "../../../../model/db/UserModel";
-
 export interface MonthActionsMsg {
   type: "MonthActionsMsg";
-  data: string;
+  data: string | undefined;
+  year: number;
+  month: number;
 }

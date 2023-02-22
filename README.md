@@ -34,3 +34,5 @@ Ambassador Hour Log
 - back up database every month
 
 ## PUSH TO PRODUCTION
+
+LOOK INTO OPENING WINDOWS FOR GOBLIN TRIBES

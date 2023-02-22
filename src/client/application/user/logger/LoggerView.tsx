@@ -1,5 +1,6 @@
 import React from "react";
 import { Component } from "react";
+import { ChangePasswordForm } from "../components/ChangePasswordForm";
 import { LeftNav, LeftNavProps } from "../components/LeftNav";
 import { UserHeader } from "../components/UserHeader";
 import { UserViewProps } from "../UserView";
@@ -48,7 +49,16 @@ export class LoggerView extends Component<{ props: LoggerViewProps }, LoggerView
         <UserHeader></UserHeader>
         <div className="page-content">
           <LeftNav options={button_options.options}></LeftNav>
-          <span>Logger View</span>
+          <div className="main-content">
+            {this.state.view === "change_password" && (
+              <ChangePasswordForm
+                client_app={this.props.props.client_app}
+                on_submit={(new_password) => {
+                  this.logger_stw.send_attempt_change_password(new_password);
+                }}
+              ></ChangePasswordForm>
+            )}
+          </div>
         </div>
       </div>
     );

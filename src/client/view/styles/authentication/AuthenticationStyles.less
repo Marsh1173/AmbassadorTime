@@ -3,9 +3,7 @@
   padding-top: 20vh;
 
   .AuthenticationForm {
-    .flex;
-    .padding;
-    .gap;
+    .form;
 
     text-align: center;
 
@@ -14,31 +12,6 @@
 
     & > * {
       width: 100%;
-    }
-
-    .title {
-      .title-text;
-      .big-text;
-    }
-
-    input[type="submit"] {
-      &:not(:disabled) {
-        .shadowed-button (@color: @uvu-green);
-      }
-      &:disabled {
-        .shadowed-button (@color: @dark-gray);
-      }
-      .rounded;
-      .padding-small;
-      .big-text;
-    }
-
-    input:not([type="submit"]) {
-      .padding-smaller;
-      .mid-text;
-      .regular-text;
-      .rounded;
-      .bordered;
     }
   }
 }

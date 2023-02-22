@@ -1,6 +1,7 @@
 import { ServerAdminMessage } from "./admin/AdminApi.ts";
 import { ServerAuthenticationMessage } from "./authentication/AuthenticationApi";
 import { ServerLoggerMessage } from "./logger/LoggerApi";
+import { ServerUserMessage } from "./user/UserApi";
 
 export class ServerMessageNotImplemented extends Error {
   constructor(server_msg: any) {
@@ -9,4 +10,4 @@ export class ServerMessageNotImplemented extends Error {
   }
 }
 
-export type ServerMessage = ServerAuthenticationMessage | ServerAdminMessage | ServerLoggerMessage;
+export type ServerMessage = ServerAuthenticationMessage | ServerAdminMessage | ServerLoggerMessage | ServerUserMessage;

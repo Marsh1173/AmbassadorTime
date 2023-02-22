@@ -6,5 +6,5 @@ import { MonthActionsMsg } from "./MonthActions";
 
 export interface ServerAdminMessage {
   type: "ServerAdminMessage";
-  msg: FailureMsg | SuccessMsg | LogBatchMsg | AllLoggersMsg | MonthActionsMsg;
+  msg: LogBatchMsg | AllLoggersMsg | MonthActionsMsg;
 }

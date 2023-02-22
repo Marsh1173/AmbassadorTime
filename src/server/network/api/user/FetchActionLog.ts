@@ -3,8 +3,8 @@ import { BaseSchema } from "../utils/parsing/Schema";
 
 export interface FetchActionLogMsg extends MessageInterface {
   type: "FetchActionLogMsg";
-  month: string;
-  year: string;
+  month: number;
+  year: number;
 }
 
 export const FetchActionLogMsgSchema: BaseSchema = {
@@ -12,12 +12,12 @@ export const FetchActionLogMsgSchema: BaseSchema = {
   fields: [
     {
       property_name: "month",
-      property_type: "string",
+      property_type: "number",
       is_optional: false,
     },
     {
       property_name: "year",
-      property_type: "string",
+      property_type: "number",
       is_optional: false,
     },
   ],

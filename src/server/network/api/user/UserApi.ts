@@ -9,6 +9,7 @@ import { CreateLogMsg, CreateLogMsgSchema } from "./CreateLog";
 import { FetchActionLogMsg, FetchActionLogMsgSchema } from "./FetchActionLog";
 import { FetchAllLogsMsg, FetchAllLogsMsgSchema } from "./FetchAllLogs";
 import { FetchUserLogsMsg, FetchUserLogsMsgSchema } from "./FetchUserLogs";
+import { FetchLoggersMsg, FetchLoggersMsgSchema } from "./FetchLoggers";
 
 export interface ClientUserMessage extends MessageInterface {
   type: "ClientUserMessage";
@@ -21,7 +22,8 @@ export interface ClientUserMessage extends MessageInterface {
     | CreateLogMsg
     | FetchActionLogMsg
     | FetchAllLogsMsg
-    | FetchUserLogsMsg;
+    | FetchUserLogsMsg
+    | FetchLoggersMsg;
 }
 
 export const ClientUserSchema: BaseSchema = {
@@ -36,5 +38,6 @@ export const ClientUserSchema: BaseSchema = {
     FetchActionLogMsgSchema,
     FetchAllLogsMsgSchema,
     FetchUserLogsMsgSchema,
+    FetchLoggersMsgSchema,
   ],
 };

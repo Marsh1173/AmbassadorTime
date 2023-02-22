@@ -1,5 +1,5 @@
 import { UserId } from "../../../model/db/UserModel";
-import { ReturnMsg } from "../../database/utils/Dao";
+import { ReturnMsg } from "../../utils/ReturnMsg";
 
 export interface IAuthenticatedClientTracker {
   attempt_add_client(id: UserId): ReturnMsg;

@@ -9,12 +9,23 @@
     max-width: @max-screen-width;
 
     flex-direction: row;
-
+    align-items: flex-start;
     .padding-small;
 
     @media screen and (max-width: calc(@small-screen-bp)) {
+      align-items: center;
       flex-direction: column;
       padding: 0px;
+    }
+  }
+}
+
+.NoPermsView {
+  .page-content {
+    .padding;
+    span {
+      .mid-text;
+      .regular-text;
     }
   }
 }

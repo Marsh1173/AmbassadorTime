@@ -2,10 +2,7 @@ import { MessageInterface } from "../msg/MessageInterface";
 import { OptionSchema, BaseSchema, FieldSchemas } from "./Schema";
 
 export abstract class MsgParser {
-  public static parse_msg<T extends MessageInterface>(
-    json: string,
-    schema: OptionSchema
-  ): T | undefined {
+  public static parse_msg<T extends MessageInterface>(json: string, schema: OptionSchema): T | undefined {
     try {
       let parsed = JSON.parse(json);
 
@@ -66,9 +63,7 @@ export abstract class MsgParser {
       return false;
     }
 
-    let option: BaseSchema | undefined = schema.find(
-      (option) => option.type === (obj as { type: unknown }).type
-    );
+    let option: BaseSchema | undefined = schema.find((option) => option.type === (obj as { type: unknown }).type);
     if (option === undefined) {
       return false;
     }
@@ -76,27 +71,18 @@ export abstract class MsgParser {
     return MsgParser.parse_base_schema(obj, option);
   }
 
-  private static parse_fields(
-    obj: Object,
-    schema_fields: FieldSchemas
-  ): boolean {
+  private static parse_fields(obj: Object, schema_fields: FieldSchemas): boolean {
     let obj_properties: Map<string, any> = new Map();
     Object.entries(obj).forEach((entry) => {
       obj_properties.set(entry[0], entry[1]);
     });
     for (const schema_field of schema_fields) {
-      let obj_property: string | undefined = obj_properties.get(
-        schema_field.property_name
-      );
-      if (
-        schema_field.is_optional &&
-        (!obj_property || schema_field.property_type !== typeof obj_property)
-      ) {
+      let obj_property: any | undefined = obj_properties.get(schema_field.property_name);
+      if (schema_field.is_optional && obj_property && schema_field.property_type !== typeof obj_property) {
         return false;
       } else if (
         !schema_field.is_optional &&
-        obj_property &&
-        schema_field.property_type !== typeof obj_property
+        (!obj_property || (obj_property && schema_field.property_type !== typeof obj_property))
       ) {
         return false;
       }

@@ -1,70 +1,81 @@
-// import React from "react";
+// import React, { ChangeEvent, FormEvent } from "react";
 // import { Component } from "react";
 
-// export interface InputFieldData {
-//   default_value?: string;
-//   input_type: string;
+// export interface FormInputOptions {
+//   name: string,
+//   type: string,
+
 // }
 
-// export interface FormProps<Inputs extends string> {
-//   input_field_data: Record<Inputs, InputFieldData>;
-//   on_submit: (data: Record<Inputs, string>) => void;
-//   title: string;
-//   submit_label: string;
+// export interface FormProps {
+//   on_submit: (username: string, password: string) => void;
+//   submitted: boolean;
 // }
 
-// export type FormState<Inputs extends string> = Record<Inputs, string>;
+// export type FormState<InputType extends string> = Record<InputType, string>
 
-// class Form<Inputs extends string> extends Component<
-//   FormProps<Inputs>,
-//   FormState<Inputs>
+// export abstract class Form<InputType extends string, FormPropsType extends FormProps, FormStateType extends FormState<InputType>> extends Component<
+//   FormPropsType,
+//   FormStateType
 // > {
-//   constructor(props: FormProps<Inputs>) {
+//   constructor(props: FormPropsType) {
 //     super(props);
+//     this.state = this.get_initial_state();
 
 //     this.handleInputChange = this.handleInputChange.bind(this);
+//     this.on_submit = this.on_submit.bind(this);
 //   }
 
-//   private handleInputChange(event) {
+//   private handleInputChange(event: ChangeEvent<HTMLInputElement>) {
 //     const target = event.target;
-//     const value = target.type === "checkbox" ? target.checked : target.value;
+//     const value = target.value;
 //     const name = target.name;
 
-//     this.setState({
-//       [name]: value,
-//     });
+//     if(this.is_input_type(name)) {
+//       let input_Type = name as InputType
+//       this.setState({ input_Type: value });
+//     }
 //   }
 
-//   render() {
-//     let inputs: JSX.Element[] = Object.keys(this.props.input_field_data).map(
-//       (key) => {
-//         return <input name={key}></input>;
-//       }
-//     );
-
+//   public render() {
 //     return (
-//       <form>
-//         <label>
-//           <span className="title">${this.props.title}</span>
-//           <input
-//             name="isGoing"
-//             type="checkbox"
-//             checked={this.state.isGoing}
-//             onChange={this.handleInputChange}
-//           />
-//         </label>
-//         <br />
-//         <label>
-//           Number of guests:
-//           <input
-//             name="numberOfGuests"
-//             type="number"
-//             value={this.state.numberOfGuests}
-//             onChange={this.handleInputChange}
-//           />
-//         </label>
-//         <input type={"submit"} value={this.props.submit_label}></input>
+//       <form
+//         className="Form"
+//         onSubmit={(ev) => {
+//           this.on_submit(ev);
+//         }}
+//       >
+//         <h1 className="title">{this.title}</h1>
+//         <input
+//           name="username"
+//           type={"text"}
+//           value={this.state.username}
+//           onChange={this.handleInputChange}
+//           placeholder={"Username"}
+//         />
+//         <input
+//           name="password"
+//           type="password"
+//           value={this.state.password}
+//           onChange={this.handleInputChange}
+//           placeholder={"Password"}
+//         />
+//         <input
+//           type={"submit"}
+//           value={this.props.submitted ? "Signing in..." : "Sign in"}
+//           disabled={this.props.submitted}
+//         />
 //       </form>
 //     );
 //   }
+
+//   private on_submit(ev: FormEvent) {
+//     ev.preventDefault();
+//     this.props.on_submit(this.state.username, this.state.password);
+//   }
+
+//   protected abstract readonly title: JSX.Element;
+//   protected abstract get_initial_state(): FormStateType;
+//   protected abstract get_inputs(): FormInputOptions[];
+//   protected abstract is_input_type(str: string): str is InputType;
 // }
