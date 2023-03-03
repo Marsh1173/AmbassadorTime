@@ -14,11 +14,13 @@ import {
 import { UserDao } from "../database/users/UserDao";
 import { DB } from "../database/utils/DB";
 import { IUserService, UserService } from "../user/UserService";
+import { LogDao } from "../database/logs/LogDao";
 
 export interface IServerApp {
   readonly auth_service: IAuthenticationService;
   readonly user_service: IUserService;
   readonly user_dao: UserDao;
+  readonly log_dao: LogDao;
 }
 
 export class ServerApp implements IServerApp {
@@ -30,6 +32,7 @@ export class ServerApp implements IServerApp {
   public readonly user_service: IUserService;
 
   public readonly user_dao: UserDao;
+  public readonly log_dao: LogDao;
 
   constructor(private readonly config: ServerConfig) {
     //logger
@@ -38,6 +41,7 @@ export class ServerApp implements IServerApp {
     //database
     let db = DB.init();
     this.user_dao = new UserDao(db);
+    this.log_dao = new LogDao(db);
 
     //network listeners
     this.app = express();

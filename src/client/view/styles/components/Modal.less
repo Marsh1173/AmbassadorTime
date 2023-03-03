@@ -1,0 +1,31 @@
+.Modal {
+  z-index: @modal-z-index;
+  justify-content: center;
+
+  visibility: hidden;
+  &.visible {
+    visibility: visible;
+  }
+
+  .background,
+  & {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+  }
+
+  .background {
+    background-color: fade(@deep-black, 80%);
+  }
+
+  .modal-container {
+    z-index: inherit;
+    background-color: @white;
+    .rounded-half;
+
+    width: max-content;
+    height: max-content;
+  }
+}

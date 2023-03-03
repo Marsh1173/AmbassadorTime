@@ -1,0 +1,69 @@
+.UsersView {
+  .padding;
+  .gap;
+
+  .footer {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+
+    button {
+      .padding-smaller;
+    }
+
+    .create {
+      .minor-button (@color: @uvu-green, @text-color: @white, @contrast: 5%);
+    }
+
+    .delete {
+      .minor-button (@color: @red, @text-color: @white, @contrast: 5%);
+    }
+  }
+
+  .table-container {
+    .main-content-container;
+
+    .users_table {
+      border-collapse: collapse;
+      table-layout: fixed;
+
+      * {
+        text-align: start;
+      }
+
+      th,
+      td {
+        padding: 5px;
+        border-bottom: 1px solid @gray;
+      }
+
+      thead {
+        position: sticky;
+        top: 0px;
+        background-color: @light-gray;
+
+        th {
+          .small-text;
+          .title-text;
+        }
+      }
+
+      tbody {
+        tr {
+          .small-text;
+          .regular-text;
+        }
+      }
+
+      .name {
+        width: 50%;
+      }
+      .id {
+        width: 30%;
+      }
+      .time {
+        width: 20%;
+      }
+    }
+  }
+}

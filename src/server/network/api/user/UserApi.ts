@@ -3,13 +3,16 @@ import { BaseSchema } from "../utils/parsing/Schema";
 import { RegisterLoggerMsg, RegisterLoggerMsgSchema } from "./RegisterLogger";
 import { DeleteLoggerMsg, DeleteLoggerMsgSchema } from "./DeleteLogger";
 import { PromoteLoggerMsg, PromoteLoggerMsgSchema } from "./PromoteLogger";
-import { DemoteLoggerAdminMsg, DemoteLoggerAdminMsgSchema } from "./DemoteLoggerAdmin";
+import {
+  DemoteLoggerAdminMsg,
+  DemoteLoggerAdminMsgSchema,
+} from "./DemoteLoggerAdmin";
 import { ChangePasswordMsg, ChangePasswordMsgSchema } from "./ChangePassword";
 import { CreateLogMsg, CreateLogMsgSchema } from "./CreateLog";
 import { FetchActionLogMsg, FetchActionLogMsgSchema } from "./FetchActionLog";
 import { FetchAllLogsMsg, FetchAllLogsMsgSchema } from "./FetchAllLogs";
 import { FetchUserLogsMsg, FetchUserLogsMsgSchema } from "./FetchUserLogs";
-import { FetchLoggersMsg, FetchLoggersMsgSchema } from "./FetchLoggers";
+import { FetchUsersMsg, FetchUsersMsgSchema } from "./FetchUsers";
 
 export interface ClientUserMessage extends MessageInterface {
   type: "ClientUserMessage";
@@ -23,7 +26,7 @@ export interface ClientUserMessage extends MessageInterface {
     | FetchActionLogMsg
     | FetchAllLogsMsg
     | FetchUserLogsMsg
-    | FetchLoggersMsg;
+    | FetchUsersMsg;
 }
 
 export const ClientUserSchema: BaseSchema = {
@@ -38,6 +41,6 @@ export const ClientUserSchema: BaseSchema = {
     FetchActionLogMsgSchema,
     FetchAllLogsMsgSchema,
     FetchUserLogsMsgSchema,
-    FetchLoggersMsgSchema,
+    FetchUsersMsgSchema,
   ],
 };

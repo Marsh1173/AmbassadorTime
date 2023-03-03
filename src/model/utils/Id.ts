@@ -9,7 +9,7 @@ export interface HasId {
  */
 export const make_id: () => Id = () => {
   var dt = new Date().getTime();
-  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+  var uuid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".replace(
     /[xy]/g,
     function (c) {
       var r = (dt + Math.random() * 16) % 16 | 0;

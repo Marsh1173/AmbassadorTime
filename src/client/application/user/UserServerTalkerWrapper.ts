@@ -1,4 +1,7 @@
-import { ServerMessage, ServerMessageNotImplemented } from "../../network/api/ClientApi";
+import {
+  ServerMessage,
+  ServerMessageNotImplemented,
+} from "../../network/api/ClientApi";
 import { ServerTalkerWrapper } from "../../network/ServerTalkerWrapper";
 
 export abstract class UserServerTalkerWrapper extends ServerTalkerWrapper {
@@ -17,15 +20,5 @@ export abstract class UserServerTalkerWrapper extends ServerTalkerWrapper {
       default:
         throw new ServerMessageNotImplemented(msg);
     }
-  }
-
-  public send_attempt_change_password(new_password: string) {
-    this.send({
-      type: "ClientUserMessage",
-      msg: {
-        type: "ChangePasswordMsg",
-        new_password,
-      },
-    });
   }
 }

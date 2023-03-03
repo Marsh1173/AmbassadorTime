@@ -16,7 +16,10 @@ export abstract class ServerTalkerWrapper implements IServerTalkerWrapper {
   public readonly id: Id;
   protected is_deconstructed: boolean = false;
 
-  constructor(private readonly server_talker: IServerTalker, private readonly client_app: IClientApp) {
+  constructor(
+    private readonly server_talker: IServerTalker,
+    private readonly client_app: IClientApp
+  ) {
     this.id = make_id();
     this.server_talker.add_observer(this);
   }

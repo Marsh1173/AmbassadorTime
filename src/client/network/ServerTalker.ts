@@ -91,7 +91,7 @@ export class ServerTalker
     }
   }
 
-  /* MESSAGE RECEIVING (mostly implemented in the MutexObservableMessageReceiver class) */
+  /* MESSAGE RECEIVING (mostly implemented in the BufferedMessageReceiver class) */
   protected send_message_to_observers(
     observers: IServerTalkerWrapper[],
     msg: string

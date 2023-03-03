@@ -1,0 +1,37 @@
+.ActionHistoryView {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+
+    button {
+      .minor-button;
+      .padding-smaller;
+    }
+  }
+
+  &,
+  .none,
+  .loading {
+    .padding;
+  }
+
+  .loading,
+  .none,
+  .header,
+  .action-log-container {
+    &,
+    * {
+      .small-text;
+      .regular-text;
+    }
+  }
+
+  .action-log-container {
+    .main-content-container;
+
+    .action-log {
+      .alternate-background;
+    }
+  }
+}

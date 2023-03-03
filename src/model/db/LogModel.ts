@@ -1,12 +1,16 @@
 import { HasId, Id } from "../utils/Id";
-import { UserId } from "./UserModel";
+import { UserData, UserId } from "./UserModel";
 
 export type LogId = string;
 export interface LogModel extends HasId {
-  id: LogId;
-  short_description: string;
-  target_date_time_ms: number;
-  minutes_logged: number;
-  time_logged_ms: number;
-  user_id: UserId;
+  readonly id: LogId;
+  readonly short_description: string;
+  readonly target_date_time_ms: number;
+  readonly minutes_logged: number;
+  readonly time_logged_ms: number;
+  readonly user_id: UserId;
+}
+
+export interface LogData extends LogModel {
+  readonly displayname: string;
 }

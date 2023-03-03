@@ -1,4 +1,4 @@
-.shadowed-button (@color, @text-color: @white) {
+.shadowed-button (@color, @text-color: @white, @contrast: 10%) {
   @button-size: 4px;
   transform: translateY(-@button-size);
   cursor: pointer;
@@ -9,10 +9,10 @@
   text-align: center;
 
   background-color: @color;
-  border: 0px solid darken(@color, 10%);
+  border: 0px solid darken(@color, @contrast);
   border-width: 0px 0px @button-size 0px;
 
-  margin-top: @button-size;
+  margin: @button-size 0px 0px 0px;
 
   &:hover {
     background-color: lighten(@color, 2%);
@@ -21,13 +21,13 @@
   transition: all @fastest-transition linear;
   &:active:not(:disabled) {
     transform: translateY(0);
-    margin-bottom: @button-size;
+    margin: @button-size 0px @button-size 0px;
     border-width: 0px 0px 0px 0px;
   }
 }
 
-.white-button {
-  .shadowed-button(@white, @gray);
+.minor-button (@color: @white, @text-color: @gray, @contrast: 10%) {
+  .shadowed-button(@color, @text-color, @contrast);
   border-width: 2px 2px 6px 2px;
   padding: 13px 23px;
   &:active:not(:disabled) {

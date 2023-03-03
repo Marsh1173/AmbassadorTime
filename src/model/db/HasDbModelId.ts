@@ -1,3 +1,3 @@
 export interface HasDBModelId<IdType> {
-  id: IdType;
+  readonly id: IdType;
 }

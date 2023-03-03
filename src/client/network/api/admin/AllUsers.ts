@@ -1,6 +1,6 @@
 import { UserData } from "../../../../model/db/UserModel";
 
-export interface AllLoggersMsg {
-  type: "AllLoggersMsg";
+export interface AllUsersMsg {
+  type: "AllUsersMsg";
   users: UserData[];
 }

@@ -1,118 +1,120 @@
 import React from "react";
-import { Component } from "react";
-import { UserData } from "../../../../model/db/UserModel";
-import { ChangePasswordForm } from "../components/ChangePasswordForm";
-import { LeftNav, LeftNavProps } from "../components/LeftNav";
-import { UsersView } from "../components/UsersView";
-import { UserHeader } from "../components/UserHeader";
-import { UserViewProps } from "../UserView";
+import { UserData, UserTimeData } from "../../../../model/db/UserModel";
+import { LeftNavProps } from "../components/LeftNav";
+import { UsersView } from "../components/users/UsersView";
+import { UserView, UserViewProps, UserViewState } from "../UserView";
 import { AdminServerTalkerWrapper } from "./AdminServerTalkerWrapper";
 import { ActionHistoryView } from "../components/ActionHistoryView";
+import { LogsView } from "../components/logs/LogsView";
 
-export const admin_view_types = ["logs", "users", "action_logs", "change_password"] as const;
+export const admin_view_types = ["logs", "users", "action_logs"] as const;
 export type AdminViewType = typeof admin_view_types[number];
 const INITIAL_VIEW: AdminViewType = "users";
 
 export type AdminViewProps = UserViewProps;
-export interface AdminViewState {
-  view: AdminViewType;
-  users: UserData[] | undefined;
+export interface AdminViewState extends UserViewState<AdminViewType> {
+  users: UserTimeData[] | undefined;
 }
 
 const button_labels: Record<AdminViewType, string> = {
   action_logs: "Action History",
   users: "Users",
   logs: "Time Logs",
-  change_password: "Change Password",
 };
 
-export class AdminView extends Component<{ props: AdminViewProps }, AdminViewState> {
-  private readonly admin_stw: AdminServerTalkerWrapper;
-  public readonly action_log_view_ref: React.RefObject<ActionHistoryView> = React.createRef();
+export class AdminView extends UserView<
+  AdminViewType,
+  AdminViewProps,
+  AdminViewState
+> {
+  public readonly action_log_view_ref: React.RefObject<ActionHistoryView> =
+    React.createRef();
 
+  protected readonly stw: AdminServerTalkerWrapper;
   constructor(props: { props: AdminViewProps }) {
-    super(props);
+    super(props, { view: INITIAL_VIEW, users: undefined, logs: undefined });
 
-    this.state = { view: INITIAL_VIEW, users: undefined };
-    this.admin_stw = new AdminServerTalkerWrapper(this.props.props.server_talker, this.props.props.client_app, this);
+    this.stw = new AdminServerTalkerWrapper(
+      props.props.server_talker,
+      props.props.client_app,
+      this
+    );
 
     this.update_users_list = this.update_users_list.bind(this);
-    this.change_view = this.change_view.bind(this);
-
-    this.attempt_load_content = this.attempt_load_content.bind(this);
   }
 
-  public render() {
-    let button_options: LeftNavProps = {
-      options: admin_view_types
-        .filter((view_type) => {
-          if (view_type === "change_password" && !this.props.props.user_data.is_logger) {
-            return false;
-          }
-          return true;
-        })
-        .map((view_type) => {
-          return {
-            name: button_labels[view_type],
-            action: () => {
-              this.change_view(view_type);
-            },
-            selected: this.state.view === view_type,
-          };
-        }),
-    };
-
+  protected get_main_content() {
     return (
-      <div className="AdminView">
-        <UserHeader></UserHeader>
-        <div className="page-content">
-          <LeftNav options={button_options.options}></LeftNav>
-          <div className="main-content">
-            {this.state.view === "change_password" && (
-              <ChangePasswordForm
-                client_app={this.props.props.client_app}
-                on_submit={(new_password) => {
-                  this.admin_stw.send_attempt_change_password(new_password);
-                }}
-              ></ChangePasswordForm>
-            )}
-            {this.state.view === "users" && (
-              <UsersView
-                client_app={this.props.props.client_app}
-                admin_stw={this.admin_stw}
-                users={this.state.users}
-              ></UsersView>
-            )}
-            {this.state.view === "action_logs" && (
-              <ActionHistoryView
-                ref={this.action_log_view_ref}
-                client_app={this.props.props.client_app}
-                admin_stw={this.admin_stw}
-              ></ActionHistoryView>
-            )}
-          </div>
-        </div>
-      </div>
+      <>
+        {this.state.view === "users" && (
+          <UsersView
+            client_app={this.props.props.client_app}
+            admin_stw={this.stw}
+            users={this.state.users}
+          ></UsersView>
+        )}
+        {this.state.view === "action_logs" && (
+          <ActionHistoryView
+            ref={this.action_log_view_ref}
+            admin_stw={this.stw}
+          ></ActionHistoryView>
+        )}
+        {this.state.view === "logs" && (
+          <LogsView
+            props={{
+              logs: this.state.logs,
+              perms: { is_admin: true, stw: this.stw },
+              client_app: this.props.props.client_app,
+              user_data: this.props.props.user_data,
+            }}
+          ></LogsView>
+        )}
+      </>
     );
   }
 
-  componentDidMount(): void {
-    this.attempt_load_content(INITIAL_VIEW);
+  protected get_left_nav_buttons(): LeftNavProps {
+    return {
+      options: admin_view_types.map((view_type) => {
+        return {
+          name: button_labels[view_type],
+          action: () => {
+            this.change_view(view_type);
+          },
+          selected: this.state.view === view_type,
+        };
+      }),
+    };
   }
 
-  public update_users_list(users: UserData[]) {
-    this.setState({ users });
+  public update_users_list(new_users: UserData[]) {
+    if (this.state.logs !== undefined) {
+      let logs = this.state.logs;
+      let new_hour_users: UserTimeData[] = new_users.map((user) => {
+        return {
+          ...user,
+          time: logs
+            .filter((log) => log.user_id === user.id)
+            .reduce((sum, log) => sum + log.minutes_logged, 0),
+        };
+      });
+
+      this.setState({ users: new_hour_users });
+    } else {
+      this.setState({
+        users: new_users.map((user) => {
+          return { ...user, time: 0 };
+        }),
+      });
+    }
   }
 
-  public change_view(new_view: AdminViewType) {
-    this.setState({ view: new_view }, () => {
-      this.attempt_load_content(new_view);
-    });
-  }
-
-  private attempt_load_content(view: AdminViewType) {
+  protected attempt_load_content(view: AdminViewType) {
     if (view === "users" && this.state.users === undefined) {
-      this.admin_stw.request_fetch_users();
+      this.stw.request_fetch_logs();
+      this.stw.request_fetch_users();
+    } else if (view === "logs" && this.state.logs === undefined) {
+      this.stw.request_fetch_logs();
     }
   }
 }

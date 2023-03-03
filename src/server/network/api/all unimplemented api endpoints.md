@@ -1,2 +1,4 @@
-? delete log
-? edit log
+## ADMIN
+
+delete log
+edit log

@@ -61,7 +61,7 @@ export class Client
     if (!client_msg) {
       if (this.config.is_development) {
         console.error("UNRECOGNIZED MESSAGE");
-        console.error(msg);
+        console.error(msg.toString());
       }
       return;
     }

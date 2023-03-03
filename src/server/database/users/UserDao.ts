@@ -3,10 +3,18 @@ import { HashAndSalt, PasswordService } from "./utils/PasswordService";
 import { DAO } from "../utils/Dao";
 import { FailureMsg, Success } from "../../utils/ReturnMsg";
 import { ReturnMsg } from "../../utils/ReturnMsg";
-import { UserData, UserModel, UserId } from "../../../model/db/UserModel";
+import {
+  UserData,
+  UserModel,
+  UserId,
+  UserPerms,
+} from "../../../model/db/UserModel";
 import { ValidateDisplayName } from "./utils/ValidateDisplayName";
 import { ValidateUserId } from "./utils/ValidateUserId";
-import { ValidateLoginReturnMsg, ValidateLoginSuccess } from "../../authentication/utils/ClientValidator";
+import {
+  ValidateLoginReturnMsg,
+  ValidateLoginSuccess,
+} from "../../authentication/utils/ClientValidator";
 
 export const userid_taken_string: string = "User id already taken";
 
@@ -16,59 +24,74 @@ export const create_user_table_string = (table_name: string) => {
     'displayname' VARCHAR(30) NOT NULL,\
     'password' VARCHAR(32) NOT NULL,\
     'salt' VARCHAR(32) NOT NULL,\
-    'is_logger' BOOLEAN NOT NULL,\
-    'is_admin' BOOLEAN NOT NULL\
+    'perms' VARCHAR(32) NOT NULL,\
+    CHECK (perms='${UserPerms.Logger}' OR perms='${UserPerms.Admin}')\
     );`;
 };
 
-export interface FetchLoggersSuccess extends Success {
+export interface FetchUsersSuccess extends Success {
   users: UserData[];
 }
 
 export interface IUserDao {
-  register_user(data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">): ReturnMsg;
-  validate_login(data: Pick<UserModel, "id" | "password">): ValidateLoginReturnMsg;
-  promote_logger(data: UserId): ReturnMsg;
-  demote_admin_logger(data: UserId): ReturnMsg;
+  register_user(
+    data: Pick<UserModel, "id" | "displayname" | "perms">
+  ): ReturnMsg;
+  validate_login(
+    data: Pick<UserModel, "id" | "password">
+  ): ValidateLoginReturnMsg;
   is_admin(data: UserId): ReturnMsg;
   is_logger(data: UserId): ReturnMsg;
-  fetch_logger_list(): FetchLoggersSuccess | FailureMsg;
+  fetch_users_list(): FetchUsersSuccess | FailureMsg;
   change_user_password(new_password: string, user_id: UserId): ReturnMsg;
   delete_user(user_id: UserId): ReturnMsg;
 }
 
 export class UserDao extends DAO implements IUserDao {
-  private readonly get_user_data: BetterSqlite3.Statement<any[]>;
+  private readonly get_all_users_statement: BetterSqlite3.Statement<any[]>;
   private readonly insert_user: BetterSqlite3.Statement<any[]>;
   private readonly get_user: BetterSqlite3.Statement<any[]>;
-  private readonly update_is_admin: BetterSqlite3.Statement<any[]>;
   private readonly update_password: BetterSqlite3.Statement<any[]>;
   private readonly delete_user_statement: BetterSqlite3.Statement<any[]>;
 
-  constructor(private readonly db: BetterSqlite3.Database, private readonly table_name: string = "users") {
+  constructor(
+    private readonly db: BetterSqlite3.Database,
+    private readonly table_name: string = "users"
+  ) {
     super();
 
-    this.get_user_data = this.db.prepare(`SELECT id, displayname, is_logger, is_admin FROM ${this.table_name};`);
-
-    this.insert_user = this.db.prepare(
-      `INSERT INTO ${this.table_name} (id, displayname, password, salt, is_logger, is_admin) VALUES (?, ?, ?, ?, ?, ?);`
+    this.get_all_users_statement = this.db.prepare(
+      `SELECT id, displayname, perms \
+      FROM ${this.table_name};`
     );
 
-    this.get_user = this.db.prepare(`SELECT * FROM ${this.table_name} WHERE id = ?;`);
+    this.insert_user = this.db.prepare(
+      `INSERT INTO ${this.table_name} (id, displayname, password, salt, perms) VALUES (?, ?, ?, ?, ?);`
+    );
 
-    this.update_is_admin = this.db.prepare(`UPDATE ${this.table_name} SET is_admin = ? WHERE id = ?`);
+    this.get_user = this.db.prepare(
+      `SELECT * FROM ${this.table_name} WHERE id = ?;`
+    );
 
-    this.update_password = this.db.prepare(`UPDATE ${this.table_name} SET password = ?, salt = ? WHERE id = ?`);
+    this.update_password = this.db.prepare(
+      `UPDATE ${this.table_name} SET password = ?, salt = ? WHERE id = ?`
+    );
 
-    this.delete_user_statement = this.db.prepare(`DELETE FROM ${this.table_name} WHERE id = ?`);
+    this.delete_user_statement = this.db.prepare(
+      `DELETE FROM ${this.table_name} WHERE id = ?`
+    );
   }
 
-  public register_user(data: Pick<UserModel, "id" | "displayname" | "is_admin" | "is_logger">): ReturnMsg {
+  public register_user(
+    data: Pick<UserModel, "id" | "displayname" | "perms">
+  ): ReturnMsg {
     let validate_user_id_results: ReturnMsg = ValidateUserId.validate(data.id);
     if (!validate_user_id_results.success) {
       return validate_user_id_results;
     }
-    let validate_display_name_results: ReturnMsg = ValidateDisplayName.validate(data.displayname);
+    let validate_display_name_results: ReturnMsg = ValidateDisplayName.validate(
+      data.displayname
+    );
     if (!validate_display_name_results.success) {
       return validate_display_name_results;
     }
@@ -80,14 +103,15 @@ export class UserDao extends DAO implements IUserDao {
         data.displayname,
         hash_and_salt.hash,
         hash_and_salt.salt,
-        data.is_logger,
-        data.is_admin
+        data.perms
       );
       return { success: true };
     }, new Map([["SQLITE_CONSTRAINT_PRIMARYKEY", userid_taken_string]]));
   }
 
-  public validate_login(data: Pick<UserModel, "password" | "id">): ValidateLoginReturnMsg {
+  public validate_login(
+    data: Pick<UserModel, "password" | "id">
+  ): ValidateLoginReturnMsg {
     return this.catch_database_errors_get<ValidateLoginSuccess>(() => {
       const failed_attempt: FailureMsg = {
         success: false,
@@ -99,10 +123,13 @@ export class UserDao extends DAO implements IUserDao {
         return failed_attempt;
       }
 
-      let valid_password: boolean = PasswordService.check_password(data.password, {
-        hash: user_model.password,
-        salt: user_model.salt,
-      });
+      let valid_password: boolean = PasswordService.check_password(
+        data.password,
+        {
+          hash: user_model.password,
+          salt: user_model.salt,
+        }
+      );
 
       if (valid_password) {
         return {
@@ -110,8 +137,7 @@ export class UserDao extends DAO implements IUserDao {
           user_data: {
             id: user_model.id,
             displayname: user_model.displayname,
-            is_logger: user_model.is_logger,
-            is_admin: user_model.is_admin,
+            perms: user_model.perms,
           },
         };
       } else {
@@ -120,42 +146,12 @@ export class UserDao extends DAO implements IUserDao {
     });
   }
 
-  public promote_logger(data: UserId): ReturnMsg {
-    return this.catch_database_errors_run(() => {
-      let user_model: UserModel | undefined = this.get_user.get(data);
-      if (user_model === undefined) {
-        return { success: false, msg: "User not found" };
-      } else if (user_model.is_logger === 0) {
-        return { success: false, msg: "User is not a logger" };
-      }
-
-      this.update_is_admin.run(1, data);
-      return { success: true };
-    });
-  }
-
-  public demote_admin_logger(data: UserId): ReturnMsg {
-    return this.catch_database_errors_run(() => {
-      let user_model: UserModel | undefined = this.get_user.get(data);
-      if (user_model === undefined) {
-        return { success: false, msg: "User not found" };
-      } else if (user_model.is_logger === 0) {
-        return { success: false, msg: "User is not a logger" };
-      } else if (user_model.is_admin === 0) {
-        return { success: false, msg: "User is not an admin" };
-      }
-
-      this.update_is_admin.run(0, data);
-      return { success: true };
-    });
-  }
-
   public is_admin(data: UserId): ReturnMsg {
     return this.catch_database_errors_run(() => {
       let user_model: UserModel | undefined = this.get_user.get(data);
       if (user_model === undefined) {
         return { success: false, msg: "User not found" };
-      } else if (user_model.is_admin === 1) {
+      } else if (user_model.perms === UserPerms.Admin) {
         return { success: true };
       } else {
         return { success: false, msg: "User is not an admin" };
@@ -168,7 +164,7 @@ export class UserDao extends DAO implements IUserDao {
       let user_model: UserModel | undefined = this.get_user.get(data);
       if (user_model === undefined) {
         return { success: false, msg: "User not found" };
-      } else if (user_model.is_logger === 1) {
+      } else if (user_model.perms === UserPerms.Logger) {
         return { success: true };
       } else {
         return { success: false, msg: "User is not a logger" };
@@ -176,25 +172,33 @@ export class UserDao extends DAO implements IUserDao {
     });
   }
 
-  public fetch_logger_list(): FetchLoggersSuccess | FailureMsg {
-    return this.catch_database_errors_get<FetchLoggersSuccess>(() => {
-      return { success: true, users: (this.get_user_data.all() as UserData[]).filter((user) => user.is_logger === 1) };
+  public fetch_users_list(): FetchUsersSuccess | FailureMsg {
+    return this.catch_database_errors_get<FetchUsersSuccess>(() => {
+      return {
+        success: true,
+        users: this.get_all_users_statement.all(),
+      };
     });
   }
 
-  public change_user_password(new_password: string, user_id: UserId): ReturnMsg {
+  public change_user_password(
+    new_password: string,
+    user_id: UserId
+  ): ReturnMsg {
     return this.catch_database_errors_run(() => {
       let user_model: UserModel | undefined = this.get_user.get(user_id);
       if (user_model === undefined) {
         return { success: false, msg: "User not found" };
       }
 
-      let password_validation: ReturnMsg = PasswordService.validate_new_password(new_password);
+      let password_validation: ReturnMsg =
+        PasswordService.validate_new_password(new_password);
       if (!password_validation.success) {
         return password_validation;
       }
 
-      let hash_and_salt: HashAndSalt = PasswordService.hash_password(new_password);
+      let hash_and_salt: HashAndSalt =
+        PasswordService.hash_password(new_password);
       this.update_password.run(hash_and_salt.hash, hash_and_salt.salt, user_id);
       return { success: true };
     });

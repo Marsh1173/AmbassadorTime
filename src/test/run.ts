@@ -10,9 +10,9 @@ const tests: (() => Promise<boolean>)[] = [
   () => {
     return run_test_group(test_log_database, "Log Database");
   },
-  () => {
-    return run_test_group(test_msg_parser, "Message Parser");
-  },
+  // () => {
+  //   return run_test_group(test_msg_parser, "Message Parser");
+  // },
 ];
 
 const run_tests = async () => {

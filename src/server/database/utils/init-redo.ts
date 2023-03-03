@@ -1,5 +1,5 @@
 import Sqlite3 from "better-sqlite3";
-import { DBBoolean } from "../../../model/db/DBBoolean";
+import { UserPerms } from "../../../model/db/UserModel";
 import { Logger } from "../../logging/Logger";
 import { create_log_table_string } from "../logs/LogDao";
 import { create_user_table_string, UserDao } from "../users/UserDao";
@@ -27,22 +27,14 @@ async function init() {
   user_dao.register_user({
     id: "Admin",
     displayname: "Admin",
-    is_admin: DBBoolean.True,
-    is_logger: DBBoolean.False,
+    perms: UserPerms.Admin,
   });
   user_dao.change_user_password("admin", "Admin");
 
   user_dao.register_user({
-    id: "TestAdminLogger",
-    displayname: "Test Admin Logger",
-    is_admin: DBBoolean.True,
-    is_logger: DBBoolean.True,
-  });
-  user_dao.register_user({
     id: "TestLogger",
     displayname: "Test Logger",
-    is_admin: DBBoolean.False,
-    is_logger: DBBoolean.True,
+    perms: UserPerms.Logger,
   });
 }
 

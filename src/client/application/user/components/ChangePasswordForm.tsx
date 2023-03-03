@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { Component } from "react";
+import { Modal } from "../../../view/components/Modal";
 import { IClientApp } from "../../ClientApp";
 
 export interface ChangePasswordFormProps {
@@ -13,13 +14,23 @@ export interface ChangePasswordFormState {
   has_necessary_values: boolean;
 }
 
-export class ChangePasswordForm extends Component<ChangePasswordFormProps, ChangePasswordFormState> {
+export class ChangePasswordForm extends Component<
+  ChangePasswordFormProps,
+  ChangePasswordFormState
+> {
+  private readonly modal_ref: React.RefObject<ConfirmChangePasswordModal> =
+    React.createRef();
   constructor(props: ChangePasswordFormProps) {
     super(props);
-    this.state = { new_password: "", confirm_password: "", has_necessary_values: false };
+    this.state = {
+      new_password: "",
+      confirm_password: "",
+      has_necessary_values: false,
+    };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.on_submit = this.on_submit.bind(this);
+    this.confirm_change_password = this.confirm_change_password.bind(this);
   }
 
   private handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -28,7 +39,10 @@ export class ChangePasswordForm extends Component<ChangePasswordFormProps, Chang
     const name = target.name;
 
     const update_has_necessary_values = () => {
-      if (this.state.new_password !== "" && this.state.confirm_password !== "") {
+      if (
+        this.state.new_password !== "" &&
+        this.state.confirm_password !== ""
+      ) {
         this.setState({ has_necessary_values: true });
       } else {
         this.setState({ has_necessary_values: false });
@@ -67,25 +81,103 @@ export class ChangePasswordForm extends Component<ChangePasswordFormProps, Chang
           placeholder={"Confirm Password"}
           autoComplete={"confirm-password"}
         />
-        <input type={"submit"} value={"Change"} disabled={!this.state.has_necessary_values} />
+        <input
+          type={"submit"}
+          value={"Change"}
+          disabled={!this.state.has_necessary_values}
+        />
+        <ConfirmChangePasswordModal
+          on_confirm={() => {
+            this.confirm_change_password();
+          }}
+          ref={this.modal_ref}
+        ></ConfirmChangePasswordModal>
       </form>
     );
   }
 
-  private validate_passwords_are_the_same(new_password: string, confirm_password: string): boolean {
+  private validate_passwords_are_the_same(
+    new_password: string,
+    confirm_password: string
+  ): boolean {
     return new_password === confirm_password;
   }
 
   private on_submit(ev: FormEvent) {
     ev.preventDefault();
-
-    if (this.validate_passwords_are_the_same(this.state.new_password, this.state.confirm_password)) {
-      if (window.confirm("Are you sure you want to change your password?")) {
-        this.props.on_submit(this.state.new_password);
-        this.setState({ new_password: "", confirm_password: "", has_necessary_values: false });
-      }
+    if (
+      this.validate_passwords_are_the_same(
+        this.state.new_password,
+        this.state.confirm_password
+      )
+    ) {
+      this.modal_ref.current?.show();
     } else {
-      this.props.client_app.growl_service.put_growl("Passwords must match", "bad");
+      this.props.client_app.growl_service.put_growl(
+        "Passwords must match",
+        "bad"
+      );
     }
+  }
+
+  private confirm_change_password() {
+    this.props.on_submit(this.state.new_password);
+    this.setState({
+      new_password: "",
+      confirm_password: "",
+      has_necessary_values: false,
+    });
+  }
+}
+
+class ConfirmChangePasswordModal extends Component<
+  { on_confirm: () => void },
+  { visible: boolean }
+> {
+  constructor(props: { on_confirm: () => void }) {
+    super(props);
+    this.state = { visible: false };
+
+    this.show = this.show.bind(this);
+    this.hide = this.hide.bind(this);
+  }
+
+  public render() {
+    return (
+      <Modal visible={this.state.visible} on_close={this.hide}>
+        <div className="ConfirmChangePasswordModal">
+          <span>Change password?</span>
+          <div className="buttons">
+            <button
+              className="yes"
+              onClick={(ev) => {
+                ev.preventDefault();
+                this.hide();
+                this.props.on_confirm();
+              }}
+            >
+              Yes
+            </button>
+            <button
+              className="no"
+              onClick={(ev) => {
+                ev.preventDefault();
+                this.hide();
+              }}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+
+  public show() {
+    this.setState({ visible: true });
+  }
+
+  private hide() {
+    this.setState({ visible: false });
   }
 }

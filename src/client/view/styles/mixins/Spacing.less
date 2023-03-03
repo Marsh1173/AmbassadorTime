@@ -1,11 +1,20 @@
 .padding () {
   padding: 1.2rem 2.6rem;
+  @media screen and (max-width: calc(@small-screen-bp)) {
+    padding: 1rem 2.1rem;
+  }
 }
 .padding-small () {
   padding: 1rem 1.7rem;
+  @media screen and (max-width: calc(@small-screen-bp)) {
+    padding: 0.8rem 1.5rem;
+  }
 }
 .padding-smaller () {
   padding: 0.7rem 1.5rem;
+  @media screen and (max-width: calc(@small-screen-bp)) {
+    padding: 0.5rem 1rem;
+  }
 }
 .padding-tall () {
   padding: 1rem 0.9rem;

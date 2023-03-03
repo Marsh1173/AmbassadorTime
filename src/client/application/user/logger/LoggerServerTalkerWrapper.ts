@@ -1,11 +1,18 @@
-import { ServerMessage, ServerMessageNotImplemented } from "../../../network/api/ClientApi";
+import {
+  ServerMessage,
+  ServerMessageNotImplemented,
+} from "../../../network/api/ClientApi";
 import { IServerTalker } from "../../../network/ServerTalker";
 import { IClientApp } from "../../ClientApp";
 import { UserServerTalkerWrapper } from "../UserServerTalkerWrapper";
 import { LoggerView } from "./LoggerView";
 
 export class LoggerServerTalkerWrapper extends UserServerTalkerWrapper {
-  constructor(server_talker: IServerTalker, client_app: IClientApp, private readonly view: LoggerView) {
+  constructor(
+    server_talker: IServerTalker,
+    client_app: IClientApp,
+    private readonly view: LoggerView
+  ) {
     super(server_talker, client_app);
   }
 
@@ -19,4 +26,16 @@ export class LoggerServerTalkerWrapper extends UserServerTalkerWrapper {
         throw new ServerMessageNotImplemented(msg);
     }
   }
+
+  public send_attempt_change_password(new_password: string) {
+    this.send({
+      type: "ClientUserMessage",
+      msg: {
+        type: "ChangePasswordMsg",
+        new_password,
+      },
+    });
+  }
+
+  public send_attempt_create_log() {}
 }

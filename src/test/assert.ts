@@ -1,5 +1,7 @@
 import { log_test_output } from "./utils";
 
+export class CouldNotContinueError extends Error {}
+
 export const passed_failed = {
   passed: 0,
   failed: 0,
