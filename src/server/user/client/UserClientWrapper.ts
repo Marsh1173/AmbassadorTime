@@ -1,15 +1,19 @@
 import { UserData, UserId, UserPerms } from "../../../model/db/UserModel";
-import { FetchLogsSuccess } from "../../database/logs/LogDao";
+import { FetchLogsSuccess, LogModelSuccess } from "../../database/logs/LogDao";
 import { FetchUsersSuccess } from "../../database/users/UserDao";
 import { ActionLogService } from "../../logging/ActionLogService";
 import {
   ClientMessage,
   ClientMessageNotImplemented,
 } from "../../network/api/ServerApi";
+import { CreateLogMsg } from "../../network/api/user/CreateLog";
+import { DeleteLogMsg } from "../../network/api/user/DeleteLog";
+import { DeleteLoggerMsg } from "../../network/api/user/DeleteLogger";
 import { FetchActionLogMsg } from "../../network/api/user/FetchActionLog";
+import { RegisterLoggerMsg } from "../../network/api/user/RegisterLogger";
 import { IClient } from "../../network/client/Client";
 import { ClientWrapper } from "../../network/client/ClientWrapper";
-import { FailureMsg } from "../../utils/ReturnMsg";
+import { FailureMsg, ReturnMsg } from "../../utils/ReturnMsg";
 import { IUserService } from "../UserService";
 import { UserClientMap } from "./UserClientMap";
 
@@ -49,9 +53,26 @@ export class UserClientWrapper extends ClientWrapper {
       case "FetchUserLogs":
         this.attempt_fetch_user_logs();
         break;
+      case "RegisterLoggerMsg":
+        this.attempt_register_logger(msg.msg);
+        break;
+      case "DeleteLoggerMsg":
+        this.attempt_delete_logger(msg.msg);
+        break;
+      case "CreateLogMsg":
+        this.attempt_create_log(msg.msg);
+        break;
+      case "DeleteLogMsg":
+        this.attempt_delete_log(msg.msg);
+        break;
       default:
         throw new ClientMessageNotImplemented(msg);
     }
+  }
+
+  public force_close() {
+    let client = this.deconstruct();
+    client.force_close();
   }
 
   public on_client_close(id: UserId): void {
@@ -65,6 +86,46 @@ export class UserClientWrapper extends ClientWrapper {
     console.log(
       "Disconnected from authenticated client " + this.user_data.displayname
     );
+  }
+
+  protected attempt_delete_log(msg: DeleteLogMsg) {
+    let results: ReturnMsg =
+      this.user_service.delete_log_controller.attempt_delete_log(
+        this.user_data,
+        msg.log_id_to_delete
+      );
+    this.communicate_success_or_failure_action(results);
+  }
+
+  protected attempt_create_log(msg: CreateLogMsg) {
+    let results: FailureMsg | LogModelSuccess =
+      this.user_service.create_log_service.attempt_create_log(
+        this.user_data,
+        msg.short_description,
+        msg.target_date_time_ms,
+        msg.minutes_logged
+      );
+    this.communicate_success_or_failure_action(results);
+  }
+
+  protected attempt_register_logger(msg: RegisterLoggerMsg) {
+    let results: ReturnMsg =
+      this.user_service.register_logger_service.attempt_register_logger(
+        this.user_data,
+        msg.display_name,
+        msg.user_id
+      );
+    this.communicate_success_or_failure_action(results);
+  }
+
+  protected attempt_delete_logger(msg: DeleteLoggerMsg) {
+    let results: ReturnMsg =
+      this.user_service.delete_logger_service.attempt_delete_logger(
+        this.user_data,
+        msg.user_id_to_delete,
+        msg.password
+      );
+    this.communicate_success_or_failure_action(results);
   }
 
   protected attempt_fetch_users() {

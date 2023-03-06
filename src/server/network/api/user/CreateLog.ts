@@ -6,7 +6,6 @@ export interface CreateLogMsg extends MessageInterface {
   short_description: string;
   target_date_time_ms: number;
   minutes_logged: number;
-  user_id: string;
 }
 
 export const CreateLogMsgSchema: BaseSchema = {
@@ -25,11 +24,6 @@ export const CreateLogMsgSchema: BaseSchema = {
     {
       property_name: "minutes_logged",
       property_type: "number",
-      is_optional: false,
-    },
-    {
-      property_name: "user_id",
-      property_type: "string",
       is_optional: false,
     },
   ],

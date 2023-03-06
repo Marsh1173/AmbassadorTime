@@ -9,20 +9,15 @@ Ambassador Hour Log
 
 - https://inloop.github.io/sqlite-viewer/
 
-## DATABASE
+## TODOS
 
+- create log
+- - frontend admin
+- - frontend logger
+- - backend
+- - log action
 - LogDao specs
-
-## BACKEND SERVICES
-
-- Finalize server and client apis
-- Make log text file and send it to user?
-- - log every "POST" that comes through an endpoint?
-
-## FRONTEND
-
-- Everything logger flow
-- Everything admin flow
+- delete log
 - Touch up styling
 
 ## FINISHING TOUCHES
@@ -31,7 +26,7 @@ Ambassador Hour Log
 - Add approved favicon
 - Add contact info
 - Remove any personal info and clean up license
-- back up database every month
+- back up database every month with cron?
 
 ## PUSH TO PRODUCTION
 

@@ -10,6 +10,7 @@ export interface IClient extends HasId {
   send: (data: any) => void;
   add_observer: (new_observer: ClientWrapper) => void;
   remove_observer: (id: Id) => void;
+  force_close(): void;
 }
 
 export class Client
@@ -99,5 +100,9 @@ export class Client
       clearTimeout(this.timeout_handle);
       this.timeout_handle = undefined;
     }
+  }
+
+  public force_close(): void {
+    this.ws.close();
   }
 }

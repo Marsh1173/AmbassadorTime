@@ -1,6 +1,18 @@
 .UsersView {
-  .padding;
+  .padding-small;
   .gap;
+
+  .CreateUserModal {
+    .form;
+  }
+
+  .DeleteUserModal {
+    .form (@submit-color: @red);
+
+    select {
+      .rounded-half;
+    }
+  }
 
   .footer {
     flex-direction: row;
@@ -20,50 +32,17 @@
     }
   }
 
-  .table-container {
-    .main-content-container;
+  .table;
 
-    .users_table {
-      border-collapse: collapse;
-      table-layout: fixed;
-
-      * {
-        text-align: start;
-      }
-
-      th,
-      td {
-        padding: 5px;
-        border-bottom: 1px solid @gray;
-      }
-
-      thead {
-        position: sticky;
-        top: 0px;
-        background-color: @light-gray;
-
-        th {
-          .small-text;
-          .title-text;
-        }
-      }
-
-      tbody {
-        tr {
-          .small-text;
-          .regular-text;
-        }
-      }
-
-      .name {
-        width: 50%;
-      }
-      .id {
-        width: 30%;
-      }
-      .time {
-        width: 20%;
-      }
+  .table-container .users_table {
+    .name {
+      width: 50%;
+    }
+    .id {
+      width: 30%;
+    }
+    .time {
+      width: 20%;
     }
   }
 }

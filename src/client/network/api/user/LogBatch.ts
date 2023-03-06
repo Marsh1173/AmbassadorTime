@@ -1,6 +1,6 @@
-import { LogData } from "../../../../model/db/LogModel";
+import { LogModel } from "../../../../model/db/LogModel";
 
 export interface LogBatchMsg {
   type: "LogBatchMsg";
-  logs: LogData[];
+  logs: LogModel[];
 }

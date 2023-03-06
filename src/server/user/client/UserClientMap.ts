@@ -1,4 +1,4 @@
-import { UserData } from "../../../model/db/UserModel";
+import { UserData, UserId } from "../../../model/db/UserModel";
 import { IClient } from "../../network/client/Client";
 import { ClientMap } from "../../network/client/ClientMap";
 import { IUserService } from "../UserService";
@@ -21,5 +21,9 @@ export class UserClientMap extends ClientMap<UserClientWrapper> {
     );
     this.attach_client_to_map(client_wrapper);
     return client_wrapper;
+  }
+
+  public on_logger_delete(logger_id: UserId) {
+    this.get_client(logger_id)?.force_close();
   }
 }

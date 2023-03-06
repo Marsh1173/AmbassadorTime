@@ -11,7 +11,6 @@ export interface CreateLogModalProps {
     minutes_logged: number
   ) => void;
   client_app: IClientApp;
-  user_data: UserData;
 }
 
 interface CreateLogModalState {
@@ -108,8 +107,11 @@ export class CreateLogModal extends Component<
             onChange={this.handleInputChange}
           ></input>
           <div className="row">
-            <button onClick={this.hide}>Cancel</button>
+            <button className="cancel" onClick={this.hide}>
+              Cancel
+            </button>
             <input
+              className="submit"
               type={"submit"}
               value={"Submit"}
               disabled={!this.state.has_necessary_info}

@@ -13,7 +13,10 @@ export interface AuthenticationFormState {
   has_necessary_info: boolean;
 }
 
-export class AuthenticationForm extends Component<AuthenticationFormProps, AuthenticationFormState> {
+export class AuthenticationForm extends Component<
+  AuthenticationFormProps,
+  AuthenticationFormState
+> {
   constructor(props: AuthenticationFormProps) {
     super(props);
     this.state = { username: "", password: "", has_necessary_info: false };

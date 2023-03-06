@@ -1,3 +1,4 @@
+import { LogId } from "../../../../model/db/LogModel";
 import { UserData } from "../../../../model/db/UserModel";
 import {
   ServerMessage,
@@ -68,5 +69,40 @@ export class AdminServerTalkerWrapper extends UserServerTalkerWrapper {
         year,
       },
     });
+  }
+
+  public attempt_create_user(display_name: string, user_id: string) {
+    this.send({
+      type: "ClientUserMessage",
+      msg: {
+        type: "RegisterLoggerMsg",
+        user_id,
+        display_name,
+      },
+    });
+    this.request_fetch_users();
+  }
+
+  public attempt_delete_user(user_id_to_delete: string, password: string) {
+    this.send({
+      type: "ClientUserMessage",
+      msg: {
+        type: "DeleteLoggerMsg",
+        user_id_to_delete,
+        password,
+      },
+    });
+    this.request_fetch_users();
+  }
+
+  public attempt_delete_log(log_id_to_delete: LogId) {
+    this.send({
+      type: "ClientUserMessage",
+      msg: {
+        type: "DeleteLogMsg",
+        log_id_to_delete,
+      },
+    });
+    this.request_fetch_logs();
   }
 }

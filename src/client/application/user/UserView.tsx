@@ -1,6 +1,6 @@
 import React from "react";
 import { Component } from "react";
-import { LogData } from "../../../model/db/LogModel";
+import { LogModel } from "../../../model/db/LogModel";
 import { UserData } from "../../../model/db/UserModel";
 import { IServerTalker } from "../../network/ServerTalker";
 import { IClientApp } from "../ClientApp";
@@ -15,7 +15,7 @@ export interface UserViewProps {
 
 export interface UserViewState<ViewType> {
   view: ViewType;
-  logs: LogData[] | undefined;
+  logs: LogModel[] | undefined;
 }
 
 export abstract class UserView<
@@ -58,9 +58,7 @@ export abstract class UserView<
     });
   }
 
-  public update_logs_list(logs: LogData[]) {
-    this.setState({ logs });
-  }
+  public abstract update_logs_list(logs: LogModel[]): void;
 
   protected abstract attempt_load_content(view: ViewType): void;
 

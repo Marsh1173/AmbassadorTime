@@ -1,5 +1,5 @@
 import { ReturnMsg } from "../../../utils/ReturnMsg";
-import { DisplayNameMaxLength } from "../../../../model/db/UserModel";
+import { UserModel } from "../../../../model/db/UserModel";
 
 export abstract class ValidateDisplayName {
   public static validate(display_name: string): ReturnMsg {
@@ -10,7 +10,7 @@ export abstract class ValidateDisplayName {
         success: false,
         msg: "Display name can only contain letters and spaces",
       };
-    } else if (display_name.length > DisplayNameMaxLength) {
+    } else if (display_name.length > UserModel.DisplayNameMaxLength) {
       return {
         success: false,
         msg: "Display name can only contain up to 30 characters.",

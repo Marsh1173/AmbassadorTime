@@ -1,0 +1,38 @@
+.table {
+  .table-container {
+    .main-content-container;
+
+    table {
+      border-collapse: collapse;
+      table-layout: fixed;
+
+      * {
+        text-align: start;
+      }
+
+      th,
+      td {
+        padding: 5px;
+        border-bottom: 1px solid @gray;
+      }
+
+      thead {
+        position: sticky;
+        top: 0px;
+        background-color: @light-gray;
+
+        th {
+          .small-text;
+          .title-text;
+        }
+      }
+
+      tbody {
+        tr {
+          .small-text;
+          .regular-text;
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { UserData, UserPerms } from "../../model/db/UserModel";
 import { FetchLogsSuccess } from "../database/logs/LogDao";
-import { FailureMsg } from "../utils/ReturnMsg";
+import { FailureMsg, FORBIDDEN } from "../utils/ReturnMsg";
 import { IUserService } from "./UserService";
 
 export interface IFetchLogsService {
@@ -13,14 +13,14 @@ export class FetchLogsService implements IFetchLogsService {
 
   public fetch_user_logs(user_data: UserData): FetchLogsSuccess | FailureMsg {
     if (user_data.perms !== UserPerms.Logger) {
-      return { success: false, msg: "You don't have permission to do that." };
+      return FORBIDDEN;
     }
     return this.user_service.server_app.log_dao.get_user_logs(user_data.id);
   }
 
   public fetch_all_logs(user_data: UserData): FetchLogsSuccess | FailureMsg {
     if (user_data.perms !== UserPerms.Admin) {
-      return { success: false, msg: "You don't have permission to do that." };
+      return FORBIDDEN;
     }
     return this.user_service.server_app.log_dao.get_all_logs();
   }

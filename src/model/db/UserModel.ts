@@ -19,5 +19,8 @@ export interface UserTimeData extends UserData {
   time: number;
 }
 
-export const UsernameMaxLength: number = 30;
-export const DisplayNameMaxLength: number = 30;
+export abstract class UserModel {
+  public static readonly UsernameMaxLength: number = 30;
+  public static readonly DisplayNameMaxLength: number = 30;
+  public static readonly InitialPassword: string = "password";
+}

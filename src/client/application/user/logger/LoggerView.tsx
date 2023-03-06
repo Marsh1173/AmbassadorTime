@@ -1,4 +1,5 @@
 import React from "react";
+import { LogModel } from "../../../../model/db/LogModel";
 import { ChangePasswordForm } from "../components/ChangePasswordForm";
 import { LeftNavProps } from "../components/LeftNav";
 import { LogsView } from "../components/logs/LogsView";
@@ -45,12 +46,10 @@ export class LoggerView extends UserView<
         )}
         {this.state.view === "logs" && (
           <LogsView
-            props={{
-              logs: this.state.logs,
-              perms: { is_admin: false, stw: this.stw },
-              client_app: this.props.props.client_app,
-              user_data: this.props.props.user_data,
-            }}
+            logs={this.state.logs}
+            perms={{ is_admin: false, stw: this.stw }}
+            client_app={this.props.props.client_app}
+            user_data={this.props.props.user_data}
           ></LogsView>
         )}
       </>
@@ -72,6 +71,12 @@ export class LoggerView extends UserView<
   }
 
   protected attempt_load_content(view: LoggerViewType) {
-    //TODO
+    if (view === "logs" && this.state.logs === undefined) {
+      this.stw.request_fetch_logs();
+    }
+  }
+
+  public update_logs_list(logs: LogModel[]) {
+    this.setState({ logs });
   }
 }

@@ -6,10 +6,11 @@ import { UserView, UserViewProps, UserViewState } from "../UserView";
 import { AdminServerTalkerWrapper } from "./AdminServerTalkerWrapper";
 import { ActionHistoryView } from "../components/ActionHistoryView";
 import { LogsView } from "../components/logs/LogsView";
+import { LogModel } from "../../../../model/db/LogModel";
 
 export const admin_view_types = ["logs", "users", "action_logs"] as const;
 export type AdminViewType = typeof admin_view_types[number];
-const INITIAL_VIEW: AdminViewType = "users";
+const INITIAL_VIEW: AdminViewType = "logs";
 
 export type AdminViewProps = UserViewProps;
 export interface AdminViewState extends UserViewState<AdminViewType> {
@@ -41,6 +42,7 @@ export class AdminView extends UserView<
     );
 
     this.update_users_list = this.update_users_list.bind(this);
+    this.update_user_times = this.update_user_times.bind(this);
   }
 
   protected get_main_content() {
@@ -61,12 +63,10 @@ export class AdminView extends UserView<
         )}
         {this.state.view === "logs" && (
           <LogsView
-            props={{
-              logs: this.state.logs,
-              perms: { is_admin: true, stw: this.stw },
-              client_app: this.props.props.client_app,
-              user_data: this.props.props.user_data,
-            }}
+            logs={this.state.logs}
+            perms={{ is_admin: true, stw: this.stw }}
+            client_app={this.props.props.client_app}
+            user_data={this.props.props.user_data}
           ></LogsView>
         )}
       </>
@@ -88,9 +88,29 @@ export class AdminView extends UserView<
   }
 
   public update_users_list(new_users: UserData[]) {
-    if (this.state.logs !== undefined) {
+    this.setState(
+      {
+        users: new_users.map((user) => {
+          return { ...user, time: 0 };
+        }),
+      },
+      () => {
+        this.update_user_times();
+      }
+    );
+  }
+
+  public update_logs_list(logs: LogModel[]): void {
+    this.setState({ logs }, () => {
+      this.update_user_times();
+    });
+  }
+
+  protected update_user_times() {
+    if (this.state.logs !== undefined && this.state.users !== undefined) {
       let logs = this.state.logs;
-      let new_hour_users: UserTimeData[] = new_users.map((user) => {
+      let users = this.state.users;
+      let hour_users: UserTimeData[] = users.map((user) => {
         return {
           ...user,
           time: logs
@@ -99,13 +119,7 @@ export class AdminView extends UserView<
         };
       });
 
-      this.setState({ users: new_hour_users });
-    } else {
-      this.setState({
-        users: new_users.map((user) => {
-          return { ...user, time: 0 };
-        }),
-      });
+      this.setState({ users: hour_users });
     }
   }
 

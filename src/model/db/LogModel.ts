@@ -10,7 +10,3 @@ export interface LogModel extends HasId {
   readonly time_logged_ms: number;
   readonly user_id: UserId;
 }
-
-export interface LogData extends LogModel {
-  readonly displayname: string;
-}

@@ -1,45 +1,34 @@
 import { readFile } from "fs";
-import { UserData } from "../../model/db/UserModel";
+import { UserData, UserId } from "../../model/db/UserModel";
 import { Logger } from "./Logger";
 
 export abstract class ActionLogService {
   public static log_action = {
-    account_creation: (creator_data: UserData, new_user_data: UserData) => {
+    account_creation: (
+      creator_data: UserData,
+      new_display_name: string,
+      new_user_id: UserId
+    ) => {
       Logger.log_action(
-        creator_data.displayname +
+        creator_data.id +
           ' created a new user with name "' +
-          new_user_data.displayname +
+          new_display_name +
           '" and id "' +
-          new_user_data.id +
+          new_user_id +
           '".'
       );
     },
-    promotion: (
-      promotor_data: UserData,
-      newly_promoted_user_data: UserData
-    ) => {
-      Logger.log_action(
-        promotor_data.displayname +
-          " promoted user " +
-          newly_promoted_user_data.displayname +
-          " to admin."
-      );
-    },
-    demotion: (demotor_data: UserData, newly_demoted_user_data: UserData) => {
-      Logger.log_action(
-        demotor_data.displayname +
-          " demoted admin " +
-          newly_demoted_user_data.displayname +
-          " to user."
-      );
-    },
     change_password: (user_data: UserData) => {
-      Logger.log_action(user_data.displayname + " changed their password.");
+      Logger.log_action(user_data.id + " changed their password.");
     },
-    delete_account: (deletor: UserData, deleted: UserData) => {
-      Logger.log_action(
-        deletor.displayname + " deleted user " + deleted.displayname + "."
-      );
+    delete_account: (deletor: UserData, deleted_id: UserId) => {
+      Logger.log_action(deletor.id + " deleted user " + deleted_id + ".");
+    },
+    create_log: (user_data: UserData) => {
+      Logger.log_action(user_data.id + " logged hours.");
+    },
+    delete_log: (user_data: UserData) => {
+      Logger.log_action(user_data.id + " deleted a log.");
     },
   };
 

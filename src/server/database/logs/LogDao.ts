@@ -1,5 +1,5 @@
 import BetterSqlite3 from "better-sqlite3";
-import { LogData, LogId, LogModel } from "../../../model/db/LogModel";
+import { LogModel, LogId } from "../../../model/db/LogModel";
 import { HasId, make_id } from "../../../model/utils/Id";
 import { UserData, UserId } from "../../../model/db/UserModel";
 import { ValidateLog } from "./utils/ValidateLog";
@@ -43,11 +43,11 @@ export interface LogModelSuccess extends Success {
 }
 
 export interface LogSuccess extends Success {
-  log: LogData;
+  log: LogModel;
 }
 
 export interface FetchLogsSuccess extends Success {
-  logs: LogData[];
+  logs: LogModel[];
 }
 
 export class LogDao extends DAO implements ILogDao {
@@ -157,7 +157,7 @@ export class LogDao extends DAO implements ILogDao {
         return get_log_results;
       }
 
-      let log: LogData = { ...get_log_results.log, ...log_data };
+      let log: LogModel = { ...get_log_results.log, ...log_data };
       this.edit_log_statement.run(
         log.short_description,
         log.target_date_time_ms,
@@ -182,7 +182,7 @@ export class LogDao extends DAO implements ILogDao {
 
   public get_log(id: LogId): LogSuccess | FailureMsg {
     return this.catch_database_errors_get<LogSuccess>(() => {
-      let log: LogData | undefined = this.get_log_statement.get(id);
+      let log: LogModel | undefined = this.get_log_statement.get(id);
       if (log === undefined) {
         return { success: false, msg: "Log not found" };
       }

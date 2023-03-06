@@ -1,6 +1,6 @@
 import { UserData, UserPerms } from "../../model/db/UserModel";
 import { FetchUsersSuccess } from "../database/users/UserDao";
-import { FailureMsg } from "../utils/ReturnMsg";
+import { FailureMsg, FORBIDDEN } from "../utils/ReturnMsg";
 import { IUserService } from "./UserService";
 
 export interface IFetchUsersService {
@@ -14,7 +14,7 @@ export class FetchUsersService implements IFetchUsersService {
     requesting_user: UserData
   ): FetchUsersSuccess | FailureMsg {
     if (requesting_user.perms !== UserPerms.Admin) {
-      return { success: false, msg: "You don't have permission to do that." };
+      return FORBIDDEN;
     }
 
     return this.user_service.server_app.user_dao.fetch_users_list();

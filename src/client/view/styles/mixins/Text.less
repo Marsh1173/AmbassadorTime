@@ -1,3 +1,9 @@
+.smaller-text () {
+  font-size: 16px;
+  @media screen and (max-width: calc(@small-screen-bp)) {
+    font-size: 14px;
+  }
+}
 .small-text () {
   font-size: 16px;
   @media screen and (max-width: calc(@small-screen-bp)) {
@@ -24,7 +30,8 @@
 }
 
 .subtitle-text {
-  font-weight: 400;
+  font-weight: 300;
+  font-style: italic;
 }
 .regular-text () {
   font-weight: 300;

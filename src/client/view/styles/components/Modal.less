@@ -2,6 +2,9 @@
   z-index: @modal-z-index;
   justify-content: center;
 
+  position: fixed;
+  top: 0px;
+
   visibility: hidden;
   &.visible {
     visibility: visible;
@@ -9,7 +12,6 @@
 
   .background,
   & {
-    position: absolute;
     width: 100vw;
     height: 100vh;
     top: 0px;
@@ -17,6 +19,7 @@
   }
 
   .background {
+    position: absolute;
     background-color: fade(@deep-black, 80%);
   }
 
@@ -27,5 +30,7 @@
 
     width: max-content;
     height: max-content;
+
+    max-width: 95%;
   }
 }

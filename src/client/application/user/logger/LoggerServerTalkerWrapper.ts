@@ -22,9 +22,21 @@ export class LoggerServerTalkerWrapper extends UserServerTalkerWrapper {
     }
 
     switch (msg.msg.type) {
+      case "LogBatchMsg":
+        this.view.update_logs_list(msg.msg.logs);
+        break;
       default:
         throw new ServerMessageNotImplemented(msg);
     }
+  }
+
+  public request_fetch_logs() {
+    this.send({
+      type: "ClientUserMessage",
+      msg: {
+        type: "FetchUserLogs",
+      },
+    });
   }
 
   public send_attempt_change_password(new_password: string) {
@@ -37,5 +49,20 @@ export class LoggerServerTalkerWrapper extends UserServerTalkerWrapper {
     });
   }
 
-  public send_attempt_create_log() {}
+  public send_attempt_create_log(
+    short_description: string,
+    target_date_time_ms: number,
+    minutes_logged: number
+  ) {
+    this.send({
+      type: "ClientUserMessage",
+      msg: {
+        type: "CreateLogMsg",
+        short_description,
+        target_date_time_ms,
+        minutes_logged,
+      },
+    });
+    this.request_fetch_logs();
+  }
 }

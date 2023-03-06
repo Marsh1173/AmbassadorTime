@@ -3,14 +3,20 @@ import { BaseSchema } from "../utils/parsing/Schema";
 
 export interface DeleteLoggerMsg extends MessageInterface {
   type: "DeleteLoggerMsg";
-  user_id: string;
+  user_id_to_delete: string;
+  password: string;
 }
 
 export const DeleteLoggerMsgSchema: BaseSchema = {
   type: "DeleteLoggerMsg",
   fields: [
     {
-      property_name: "user_id",
+      property_name: "user_id_to_delete",
+      property_type: "string",
+      is_optional: false,
+    },
+    {
+      property_name: "password",
       property_type: "string",
       is_optional: false,
     },

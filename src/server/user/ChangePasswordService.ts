@@ -1,6 +1,6 @@
 import { UserData, UserPerms } from "../../model/db/UserModel";
 import { ActionLogService } from "../logging/ActionLogService";
-import { ReturnMsg } from "../utils/ReturnMsg";
+import { FORBIDDEN, ReturnMsg } from "../utils/ReturnMsg";
 import { IUserService } from "./UserService";
 
 export interface IChangePasswordService {
@@ -15,7 +15,7 @@ export class ChangePasswordService implements IChangePasswordService {
     new_password: string
   ): ReturnMsg {
     if (user_data.perms === UserPerms.Admin) {
-      return { success: false, msg: "You cannot do that." };
+      return FORBIDDEN;
     }
 
     let results: ReturnMsg =

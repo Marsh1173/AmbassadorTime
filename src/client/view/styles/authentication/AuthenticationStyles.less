@@ -13,5 +13,17 @@
     & > * {
       width: 100%;
     }
+
+    input[type="submit"] {
+      &:not(:disabled) {
+        .shadowed-button (@color: @uvu-green);
+      }
+      &:disabled {
+        .shadowed-button (@color: @gray);
+      }
+      .rounded;
+      .padding-smaller;
+      .big-text;
+    }
   }
 }

@@ -2,11 +2,7 @@ import { MessageInterface } from "../utils/msg/MessageInterface";
 import { BaseSchema } from "../utils/parsing/Schema";
 import { RegisterLoggerMsg, RegisterLoggerMsgSchema } from "./RegisterLogger";
 import { DeleteLoggerMsg, DeleteLoggerMsgSchema } from "./DeleteLogger";
-import { PromoteLoggerMsg, PromoteLoggerMsgSchema } from "./PromoteLogger";
-import {
-  DemoteLoggerAdminMsg,
-  DemoteLoggerAdminMsgSchema,
-} from "./DemoteLoggerAdmin";
+import { DeleteLogMsg, DeleteLogMsgSchema } from "./DeleteLog";
 import { ChangePasswordMsg, ChangePasswordMsgSchema } from "./ChangePassword";
 import { CreateLogMsg, CreateLogMsgSchema } from "./CreateLog";
 import { FetchActionLogMsg, FetchActionLogMsgSchema } from "./FetchActionLog";
@@ -19,8 +15,7 @@ export interface ClientUserMessage extends MessageInterface {
   msg:
     | RegisterLoggerMsg
     | DeleteLoggerMsg
-    | PromoteLoggerMsg
-    | DemoteLoggerAdminMsg
+    | DeleteLogMsg
     | ChangePasswordMsg
     | CreateLogMsg
     | FetchActionLogMsg
@@ -34,8 +29,7 @@ export const ClientUserSchema: BaseSchema = {
   msg: [
     RegisterLoggerMsgSchema,
     DeleteLoggerMsgSchema,
-    PromoteLoggerMsgSchema,
-    DemoteLoggerAdminMsgSchema,
+    DeleteLogMsgSchema,
     ChangePasswordMsgSchema,
     CreateLogMsgSchema,
     FetchActionLogMsgSchema,

@@ -82,6 +82,7 @@ export class ChangePasswordForm extends Component<
           autoComplete={"confirm-password"}
         />
         <input
+          className="submit"
           type={"submit"}
           value={"Change"}
           disabled={!this.state.has_necessary_values}

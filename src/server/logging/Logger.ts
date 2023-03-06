@@ -1,5 +1,6 @@
 import { writeFileSync } from "fs";
 import { ServerConfig } from "../utils/ServerConfig";
+import { ATTime } from "../../model/utils/ATDate";
 
 const BASE_PATH: string = "logs/";
 
@@ -27,20 +28,19 @@ export class Logger {
 
   private static log_to_file = (msg: any, path: string) => {
     let date: Date = new Date();
-    let dated_msg: string = Logger.get_date_time_str(date) + msg + `\n`;
+    let dated_msg: string = ATTime.get_date_time_str(date) + " - " + msg + `\n`;
     path += Logger.get_month_year_str(date) + ".log";
     writeFileSync(path, dated_msg, { flag: "a" });
   };
 
-  public static log = (msg: any) => Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.logs);
-  public static log_error = (msg: any) => Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.errors);
-  public static log_db = (msg: any) => Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.db);
-  public static log_action = (msg: any) => Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.actions);
-
-  private static readonly time_zone: string = "MST";
-  private static get_date_time_str(date: Date): string {
-    return date.toLocaleString("en-US", { timeZone: Logger.time_zone }) + " (" + Logger.time_zone + ") - ";
-  }
+  public static log = (msg: any) =>
+    Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.logs);
+  public static log_error = (msg: any) =>
+    Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.errors);
+  public static log_db = (msg: any) =>
+    Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.db);
+  public static log_action = (msg: any) =>
+    Logger.log_to_file(msg, Logger.LOG_FILE_PATHS.actions);
 
   private static get_month_year_str(date: Date): string {
     return Logger.format_month_year_str(date.getFullYear(), date.getMonth());
@@ -51,6 +51,10 @@ export class Logger {
   }
 
   public static get_action_log_filename(year: number, month: number): string {
-    return Logger.LOG_FILE_PATHS.actions + Logger.format_month_year_str(year, month) + ".log";
+    return (
+      Logger.LOG_FILE_PATHS.actions +
+      Logger.format_month_year_str(year, month) +
+      ".log"
+    );
   }
 }

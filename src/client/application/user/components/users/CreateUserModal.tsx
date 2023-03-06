@@ -1,16 +1,17 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { Component } from "react";
+import { UserModel } from "../../../../../model/db/UserModel";
 import { Modal } from "../../../../view/components/Modal";
 import { IClientApp } from "../../../ClientApp";
 
 export interface CreateUserModalProps {
-  on_confirm: (displayname: string, user_id: string) => void;
+  on_confirm: (display_name: string, user_id: string) => void;
   client_app: IClientApp;
 }
 
 interface CreateUserModalState {
   visible: boolean;
-  displayname: string;
+  display_name: string;
   user_id: string;
   has_necessary_info: boolean;
 }
@@ -23,7 +24,7 @@ export class CreateUserModal extends Component<
     super(props);
     this.state = {
       visible: false,
-      displayname: "",
+      display_name: "",
       user_id: "",
       has_necessary_info: false,
     };
@@ -40,8 +41,8 @@ export class CreateUserModal extends Component<
     const value = target.value;
     const name = target.name;
 
-    if (name === "displayname") {
-      this.setState({ displayname: value }, this.update_has_necessary_info);
+    if (name === "display_name") {
+      this.setState({ display_name: value }, this.update_has_necessary_info);
     } else if (name === "user_id") {
       this.setState({ user_id: value }, this.update_has_necessary_info);
     }
@@ -53,9 +54,9 @@ export class CreateUserModal extends Component<
         <form className="CreateUserModal" onSubmit={this.on_submit}>
           <span className="title">Create New User</span>
           <input
-            name="displayname"
+            name="display_name"
             type="text"
-            value={this.state.displayname}
+            value={this.state.display_name}
             onChange={this.handleInputChange}
             placeholder={"Name"}
             maxLength={30}
@@ -68,9 +69,16 @@ export class CreateUserModal extends Component<
             placeholder={"User ID"}
             maxLength={30}
           ></input>
+          <span className="info">
+            NOTE: A new user's initial password is "{UserModel.InitialPassword}
+            ".
+          </span>
           <div className="row">
-            <button onClick={this.hide}>Cancel</button>
+            <button className="cancel" onClick={this.hide}>
+              Cancel
+            </button>
             <input
+              className="submit"
               type={"submit"}
               value={"Submit"}
               disabled={!this.state.has_necessary_info}
@@ -92,19 +100,10 @@ export class CreateUserModal extends Component<
   private on_submit(ev: FormEvent<HTMLFormElement>) {
     ev.preventDefault();
 
-    let target_date_time_ms: number = Date.parse(this.state.target_date_time);
-    if (Number.isNaN(target_date_time_ms)) {
-      this.props.client_app.growl_service.put_growl(
-        "Invalid date / time",
-        "bad"
-      );
-      return;
-    }
-
-    this.props.on_confirm(this.state.displayname, this.state.user_id);
+    this.props.on_confirm(this.state.display_name, this.state.user_id);
     this.setState({
       visible: false,
-      displayname: "",
+      display_name: "",
       user_id: "",
       has_necessary_info: false,
     });
@@ -113,7 +112,7 @@ export class CreateUserModal extends Component<
   private update_has_necessary_info() {
     let new_state: boolean = true;
 
-    if (this.state.displayname === "" || this.state.user_id === "") {
+    if (this.state.display_name === "" || this.state.user_id === "") {
       new_state = false;
     }
 

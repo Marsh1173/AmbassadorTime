@@ -1,7 +1,7 @@
 import BetterSqlite3 from "better-sqlite3";
 import { HashAndSalt, PasswordService } from "./utils/PasswordService";
 import { DAO } from "../utils/Dao";
-import { FailureMsg, Success } from "../../utils/ReturnMsg";
+import { BoolReturnMsg, FailureMsg, Success } from "../../utils/ReturnMsg";
 import { ReturnMsg } from "../../utils/ReturnMsg";
 import {
   UserData,
@@ -40,8 +40,8 @@ export interface IUserDao {
   validate_login(
     data: Pick<UserModel, "id" | "password">
   ): ValidateLoginReturnMsg;
-  is_admin(data: UserId): ReturnMsg;
-  is_logger(data: UserId): ReturnMsg;
+  is_admin(user_id: UserId): BoolReturnMsg;
+  is_logger(user_id: UserId): BoolReturnMsg;
   fetch_users_list(): FetchUsersSuccess | FailureMsg;
   change_user_password(new_password: string, user_id: UserId): ReturnMsg;
   delete_user(user_id: UserId): ReturnMsg;
@@ -96,7 +96,9 @@ export class UserDao extends DAO implements IUserDao {
       return validate_display_name_results;
     }
 
-    let hash_and_salt: HashAndSalt = PasswordService.hash_password("password");
+    let hash_and_salt: HashAndSalt = PasswordService.hash_password(
+      UserModel.InitialPassword
+    );
     return this.catch_database_errors_run(() => {
       this.insert_user.run(
         data.id,
@@ -146,28 +148,28 @@ export class UserDao extends DAO implements IUserDao {
     });
   }
 
-  public is_admin(data: UserId): ReturnMsg {
-    return this.catch_database_errors_run(() => {
-      let user_model: UserModel | undefined = this.get_user.get(data);
+  public is_admin(user_id: UserId): BoolReturnMsg {
+    return this.catch_database_errors_get<BoolReturnMsg>(() => {
+      let user_model: UserModel | undefined = this.get_user.get(user_id);
       if (user_model === undefined) {
         return { success: false, msg: "User not found" };
       } else if (user_model.perms === UserPerms.Admin) {
-        return { success: true };
+        return { success: true, result: true };
       } else {
-        return { success: false, msg: "User is not an admin" };
+        return { success: true, result: false };
       }
     });
   }
 
-  public is_logger(data: UserId): ReturnMsg {
-    return this.catch_database_errors_run(() => {
-      let user_model: UserModel | undefined = this.get_user.get(data);
+  public is_logger(user_id: UserId): BoolReturnMsg {
+    return this.catch_database_errors_get<BoolReturnMsg>(() => {
+      let user_model: UserModel | undefined = this.get_user.get(user_id);
       if (user_model === undefined) {
         return { success: false, msg: "User not found" };
       } else if (user_model.perms === UserPerms.Logger) {
-        return { success: true };
+        return { success: true, result: true };
       } else {
-        return { success: false, msg: "User is not a logger" };
+        return { success: true, result: false };
       }
     });
   }

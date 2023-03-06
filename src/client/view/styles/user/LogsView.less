@@ -1,12 +1,61 @@
 .LogsView {
+  .padding-small;
+  .gap;
+
+  .open-create-log-modal {
+    .rounded;
+    .padding-smaller;
+    .big-text;
+    .shadowed-button (@color: @uvu-green);
+  }
+
   .CreateLogModal {
     .form;
 
-    button {
-      .shadowed-button (@color: @white, @text-color: @dark-gray);
-      .rounded;
-      .padding-smaller;
-      .big-text;
+    .create {
+      .minor-button (@color: @uvu-green, @text-color: @white, @contrast: 5%);
+    }
+
+    .delete {
+      .minor-button (@color: @red, @text-color: @white, @contrast: 5%);
+    }
+  }
+
+  .ViewLogModal {
+    .form;
+    align-items: flex-start;
+
+    .delete {
+      .minor-button (@color: @red, @text-color: @white, @contrast: 5%);
+    }
+
+    .close {
+      .minor-button;
+    }
+  }
+
+  .table;
+  .table-container .logs_table {
+    .user {
+      width: 30%;
+    }
+    .description {
+      width: 50%;
+    }
+    .date {
+      width: 30%;
+    }
+    .hours {
+      width: 20%;
+    }
+
+    td,
+    tr {
+      .smaller-text;
+    }
+
+    td {
+      cursor: pointer;
     }
   }
 }

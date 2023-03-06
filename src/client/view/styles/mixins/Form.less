@@ -8,7 +8,23 @@
     .big-text;
   }
 
-  input:not([type="submit"]) {
+  .info {
+    .small-text;
+    .subtitle-text;
+  }
+  .warning {
+    .small-text;
+    .regular-text;
+    color: @red;
+  }
+  .label {
+    .mid-text;
+    .regular-text;
+  }
+
+  input:not([type="submit"]),
+  select,
+  option {
     .padding-smaller;
     .mid-text;
     .regular-text;
@@ -16,20 +32,28 @@
     .bordered;
   }
 
-  input[type="submit"] {
-    &:not(:disabled) {
-      .shadowed-button (@color: @submit-color);
-    }
-    &:disabled {
-      .shadowed-button (@color: @gray);
-    }
-    .rounded;
-    .padding-smaller;
+  input[type="submit"],
+  button {
     .big-text;
+  }
+
+  .cancel {
+    .minor-button ();
+  }
+  .submit {
+    .minor-button (@color: @submit-color, @text-color: @white, @contrast: 5%);
+    &:disabled {
+      .minor-button (@color: @white, @text-color: @light-gray, @contrast: 10%);
+    }
   }
 
   .row {
     flex-direction: row;
     justify-content: space-between;
+    .gap;
+  }
+
+  hr {
+    width: 100%;
   }
 }
