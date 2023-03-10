@@ -9,9 +9,8 @@ export class DisconnectionView extends Component<{ msg: string }, {}> {
         <button onClick={() => location.reload()}>
           <span>Refresh</span>
         </button>
+        <span>If you cannot connect, reach out to natehroylance@gmail.com</span>
       </div>
     );
   }
-
-  private refresh() {}
 }

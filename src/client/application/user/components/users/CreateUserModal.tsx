@@ -58,7 +58,7 @@ export class CreateUserModal extends Component<
             type="text"
             value={this.state.display_name}
             onChange={this.handleInputChange}
-            placeholder={"Name"}
+            placeholder={"Display name"}
             maxLength={30}
           ></input>
           <input

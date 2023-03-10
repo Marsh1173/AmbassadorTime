@@ -4,8 +4,8 @@ import { LogModel } from "../../../model/db/LogModel";
 import { UserData } from "../../../model/db/UserModel";
 import { IServerTalker } from "../../network/ServerTalker";
 import { IClientApp } from "../ClientApp";
-import { LeftNav, LeftNavProps } from "./components/LeftNav";
-import { UserHeader } from "./components/UserHeader";
+import { LeftNav, LeftNavProps } from "./components/base/LeftNav";
+import { UserHeader } from "./components/base/UserHeader";
 
 export interface UserViewProps {
   client_app: IClientApp;

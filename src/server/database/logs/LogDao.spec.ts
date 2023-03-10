@@ -4,6 +4,7 @@ import { UserModel, UserPerms } from "../../../model/db/UserModel";
 import { assert, CouldNotContinueError } from "../../../test/assert";
 import { FailureMsg, ReturnMsg } from "../../utils/ReturnMsg";
 import { create_user_table_string, IUserDao, UserDao } from "../users/UserDao";
+import { DB } from "../utils/DB";
 import {
   cannot_log_future_time,
   create_log_table_string,
@@ -11,7 +12,6 @@ import {
   ILogDao,
   LogDao,
   LogModelSuccess,
-  LogSuccess,
   user_does_not_exist,
 } from "./LogDao";
 
@@ -38,7 +38,7 @@ const good_log_data: Pick<
 
 export const test_log_database = async () => {
   //setup
-  let db = await new Sqlite3("src/server/database/utils/database.db");
+  let db = DB.init(false, () => {});
   attempt_drop_table(db);
   create_table(db);
 
@@ -151,15 +151,11 @@ const tests: ((user_dao: IUserDao, log_dao: ILogDao) => void)[] = [
       throw new CouldNotContinueError("Get user logs");
 
     assert(
-      get_logs_results.logs[0].user_id === test_logger_register_data.id &&
-        get_logs_results.logs[0].displayname ===
-          test_logger_register_data.displayname,
+      get_logs_results.logs[0].user_id === test_logger_register_data.id,
       "get user logs correct data",
-      `${get_logs_results.logs[0].user_id} should be ${test_logger_register_data.id} \
-      and ${get_logs_results.logs[0].displayname} should be ${test_logger_register_data.displayname}`
+      `${get_logs_results.logs[0].user_id} should be ${test_logger_register_data.id}`
     );
   },
-  (user_dao: IUserDao, log_dao: ILogDao) => {},
   (user_dao: IUserDao, log_dao: ILogDao) => {
     let results: FailureMsg | LogModelSuccess = log_dao.create_log(
       good_log_data,

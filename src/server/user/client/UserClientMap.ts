@@ -24,6 +24,8 @@ export class UserClientMap extends ClientMap<UserClientWrapper> {
   }
 
   public on_logger_delete(logger_id: UserId) {
-    this.get_client(logger_id)?.force_close();
+    this.get_client(
+      (client: UserClientWrapper) => client.user_data.id === logger_id
+    )?.force_close();
   }
 }

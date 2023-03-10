@@ -13,7 +13,9 @@ export abstract class ClientMap<WrapperType extends ClientWrapper> {
     this.clients.set(client_wrapper.id, client_wrapper);
   }
 
-  protected get_client(user_id: UserId): WrapperType | undefined {
-    return this.clients.get(user_id);
+  protected get_client(
+    f: (client: WrapperType) => boolean
+  ): WrapperType | undefined {
+    return Array.from(this.clients).find(([id, client]) => f(client))?.[1];
   }
 }

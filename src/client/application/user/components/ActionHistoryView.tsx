@@ -1,38 +1,8 @@
 import React from "react";
 import { Component } from "react";
+import { ATTime } from "../../../../model/utils/ATDate";
 import { IClientApp } from "../../ClientApp";
 import { AdminServerTalkerWrapper } from "../admin/AdminServerTalkerWrapper";
-
-const month_to_string = (month: number) => {
-  switch (month) {
-    case 0:
-      return "January";
-    case 1:
-      return "February";
-    case 2:
-      return "March";
-    case 3:
-      return "April";
-    case 4:
-      return "May";
-    case 5:
-      return "June";
-    case 6:
-      return "July";
-    case 7:
-      return "August";
-    case 8:
-      return "September";
-    case 9:
-      return "October";
-    case 10:
-      return "November";
-    case 11:
-      return "December";
-    default:
-      return "Month";
-  }
-};
 
 export interface ActionHistoryViewProps {
   admin_stw: AdminServerTalkerWrapper;
@@ -98,7 +68,7 @@ export class ActionHistoryView extends Component<
             Previous Month
           </button>
           <span>
-            {month_to_string(this.state.month) + ", " + this.state.year}
+            {ATTime.month_to_string(this.state.month) + ", " + this.state.year}
           </span>
           <button onClick={() => this.change_month("forward")}>
             Next Month

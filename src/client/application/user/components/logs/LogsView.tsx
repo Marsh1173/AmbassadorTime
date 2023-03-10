@@ -43,32 +43,42 @@ export class LogsView extends Component<LogsViewProps, LogsViewState> {
             <thead>
               <tr>
                 {this.props.perms.is_admin && <th className="user">User</th>}
-                <th className="description">Description</th>
+                {!this.props.perms.is_admin && (
+                  <th className="description">Description</th>
+                )}
                 <th className="date">Date</th>
                 <th className="hours">Hours</th>
               </tr>
             </thead>
             <tbody>
-              {this.props.logs.map((log_data) => {
-                return (
-                  <tr key={log_data.id} onClick={() => this.open_log(log_data)}>
-                    {this.props.perms.is_admin && (
-                      <td className="user">{log_data.user_id}</td>
-                    )}
-                    <td className="description">
-                      {log_data.short_description}
-                    </td>
-                    <td className="date">
-                      {ATTime.get_date_from_ms(log_data.target_date_time_ms)}
-                    </td>
-                    <td className="hours">
-                      {ATTime.get_hours_and_minutes_from_minutes(
-                        log_data.minutes_logged
+              {this.props.logs
+                .sort((a, b) => b.target_date_time_ms - a.target_date_time_ms)
+                .map((log_data) => {
+                  return (
+                    <tr
+                      key={log_data.id}
+                      onClick={() => this.open_log(log_data)}
+                    >
+                      {this.props.perms.is_admin && (
+                        <td className="user">{log_data.displayname}</td>
                       )}
-                    </td>
-                  </tr>
-                );
-              })}
+                      {!this.props.perms.is_admin && (
+                        <td className="description">
+                          {log_data.short_description}
+                        </td>
+                      )}
+
+                      <td className="date">
+                        {ATTime.get_date_from_ms(log_data.target_date_time_ms)}
+                      </td>
+                      <td className="hours">
+                        {ATTime.get_hours_and_minutes_from_minutes(
+                          log_data.minutes_logged
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -89,8 +99,8 @@ export class LogsView extends Component<LogsViewProps, LogsViewState> {
             Log Here
           </button>
         )}
-        <span className="info">Click on a row to see more.</span>
         {logs_element}
+        <span className="info">Click on a row to see more.</span>
         <ViewLogModal
           perms={this.props.perms}
           ref={this.log_view_modal_ref}

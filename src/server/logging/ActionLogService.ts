@@ -52,23 +52,4 @@ export abstract class ActionLogService {
       }
     );
   }
-
-  // private static log_file_path: string = "src/server/logging/actions/";
-  // private static log_action_to_file(msg: any) {
-  //   let date = new Date();
-  //   let path: string =
-  //     ActionLogService.log_file_path +
-  //     date.getFullYear() +
-  //     "-" +
-  //     (date.getMonth() + 1).toString() +
-  //     ".log";
-  //   Logger.log_action(msg);
-  // }
-
-  // /**
-  //  * For testing purposes only.
-  //  */
-  // public static override_log_file_path(new_path: string) {
-  //   ActionLogService.log_file_path = new_path;
-  // }
 }

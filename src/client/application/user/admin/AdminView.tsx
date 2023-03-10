@@ -1,6 +1,10 @@
 import React from "react";
-import { UserData, UserTimeData } from "../../../../model/db/UserModel";
-import { LeftNavProps } from "../components/LeftNav";
+import {
+  UserData,
+  UserModel,
+  UserTimeData,
+} from "../../../../model/db/UserModel";
+import { LeftNavProps } from "../components/base/LeftNav";
 import { UsersView } from "../components/users/UsersView";
 import { UserView, UserViewProps, UserViewState } from "../UserView";
 import { AdminServerTalkerWrapper } from "./AdminServerTalkerWrapper";
@@ -53,6 +57,7 @@ export class AdminView extends UserView<
             client_app={this.props.props.client_app}
             admin_stw={this.stw}
             users={this.state.users}
+            logs={this.state.logs ? this.state.logs : []}
           ></UsersView>
         )}
         {this.state.view === "action_logs" && (
@@ -91,7 +96,7 @@ export class AdminView extends UserView<
     this.setState(
       {
         users: new_users.map((user) => {
-          return { ...user, time: 0 };
+          return { ...user, total_time: 0, month_time: 0 };
         }),
       },
       () => {
@@ -110,22 +115,20 @@ export class AdminView extends UserView<
     if (this.state.logs !== undefined && this.state.users !== undefined) {
       let logs = this.state.logs;
       let users = this.state.users;
-      let hour_users: UserTimeData[] = users.map((user) => {
-        return {
-          ...user,
-          time: logs
-            .filter((log) => log.user_id === user.id)
-            .reduce((sum, log) => sum + log.minutes_logged, 0),
-        };
-      });
+      const month: number = new Date().getMonth();
+      let time_users: UserTimeData[] = users.map((user) =>
+        UserModel.FillTotalTime(user, logs, month)
+      );
 
-      this.setState({ users: hour_users });
+      this.setState({ users: time_users });
     }
   }
 
   protected attempt_load_content(view: AdminViewType) {
     if (view === "users" && this.state.users === undefined) {
-      this.stw.request_fetch_logs();
+      if (this.state.logs === undefined) {
+        this.stw.request_fetch_logs();
+      }
       this.stw.request_fetch_users();
     } else if (view === "logs" && this.state.logs === undefined) {
       this.stw.request_fetch_logs();

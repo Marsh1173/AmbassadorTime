@@ -58,18 +58,18 @@ export class AuthenticationView extends Component<
 
   private last_attempted_username: string = "";
   private last_attempted_password: string = "";
-  private on_attempt_login(username: string, password: string) {
+  private on_attempt_login(user_id: string, password: string) {
     let frontend_errs: string[] =
       LoginValidator.front_end_validate_username_and_password(
-        username,
+        user_id,
         password
       );
 
     if (frontend_errs.length === 0) {
       this.set_submitted(true);
-      this.last_attempted_username = username;
+      this.last_attempted_username = user_id;
       this.last_attempted_password = password;
-      this.auth_stw.send_login(username, password);
+      this.auth_stw.send_login(user_id, password);
     } else {
       for (const err of frontend_errs) {
         this.props.props.client_app.growl_service.put_growl(err, "bad");

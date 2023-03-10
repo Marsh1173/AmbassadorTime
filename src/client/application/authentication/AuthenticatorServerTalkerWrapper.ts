@@ -1,12 +1,19 @@
 import { UserData } from "../../../model/db/UserModel";
-import { ServerMessage, ServerMessageNotImplemented } from "../../network/api/ClientApi";
+import {
+  ServerMessage,
+  ServerMessageNotImplemented,
+} from "../../network/api/ClientApi";
 import { IServerTalker } from "../../network/ServerTalker";
 import { ServerTalkerWrapper } from "../../network/ServerTalkerWrapper";
 import { IClientApp } from "../ClientApp";
 import { AuthenticationView } from "./AuthenticationView";
 
 export class AuthenticatorServerTalkerWrapper extends ServerTalkerWrapper {
-  constructor(server_talker: IServerTalker, client_app: IClientApp, private readonly view: AuthenticationView) {
+  constructor(
+    server_talker: IServerTalker,
+    client_app: IClientApp,
+    private readonly view: AuthenticationView
+  ) {
     super(server_talker, client_app);
   }
 
@@ -32,13 +39,13 @@ export class AuthenticatorServerTalkerWrapper extends ServerTalkerWrapper {
     this.view.on_successful_login(user_data);
   }
 
-  public send_login(username: string, password: string) {
+  public send_login(user_id: string, password: string) {
     this.send({
       type: "ClientAuthenticationMessage",
       msg: {
         type: "AttemptLoginMsg",
-        user_id: username,
-        password: password,
+        user_id,
+        password,
       },
     });
   }

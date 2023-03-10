@@ -10,12 +10,11 @@ import { IClientApp } from "../../../ClientApp";
 
 export interface DeleteUserModalProps {
   on_confirm: (user_id_to_delete: string, password: string) => void;
-  users: UserData[] | undefined;
+  user: UserData;
 }
 
 interface DeleteUserModalState {
   visible: boolean;
-  user_id_to_delete: string;
   password: string;
   has_necessary_info: boolean;
 }
@@ -28,7 +27,6 @@ export class DeleteUserModal extends Component<
     super(props);
     this.state = {
       visible: false,
-      user_id_to_delete: "",
       password: "",
       has_necessary_info: false,
     };
@@ -47,45 +45,16 @@ export class DeleteUserModal extends Component<
     const value = target.value;
     const name = target.name;
 
-    if (name === "user_id_to_delete") {
-      this.setState(
-        { user_id_to_delete: value },
-        this.update_has_necessary_info
-      );
-    } else if (name === "password") {
+    if (name === "password") {
       this.setState({ password: value }, this.update_has_necessary_info);
     }
   }
 
-  private readonly DEFAULT_USER: JSX.Element = (<option value={""}></option>);
-
   public render() {
-    let user_options: JSX.Element[] = [this.DEFAULT_USER];
-    if (this.props.users !== undefined) {
-      user_options = user_options.concat(
-        this.props.users
-          .filter((user_data) => user_data.perms !== UserPerms.Admin)
-          .map((user_data) => {
-            return (
-              <option key={user_data.id} value={user_data.id}>
-                {user_data.id}
-              </option>
-            );
-          })
-      );
-    }
-
     return (
       <Modal visible={this.state.visible} on_close={this.hide}>
         <form className="DeleteUserModal" onSubmit={this.on_submit}>
-          <span className="title">Delete User</span>
-          <select
-            name="user_id_to_delete"
-            value={this.state.user_id_to_delete}
-            onChange={this.handleInputChange}
-          >
-            {user_options}
-          </select>
+          <span className="title">Delete {this.props.user.displayname}</span>
           <span className="label">Confirm with your password</span>
           <input
             name="password"
@@ -126,25 +95,18 @@ export class DeleteUserModal extends Component<
   private on_submit(ev: FormEvent<HTMLFormElement>) {
     ev.preventDefault();
 
-    if (
-      window.confirm(
-        "Are you sure you want to delete " + this.state.user_id_to_delete + "?"
-      )
-    ) {
-      this.props.on_confirm(this.state.user_id_to_delete, this.state.password);
-      this.setState({
-        visible: false,
-        user_id_to_delete: "",
-        password: "",
-        has_necessary_info: false,
-      });
-    }
+    this.props.on_confirm(this.props.user.id, this.state.password);
+    this.setState({
+      visible: false,
+      password: "",
+      has_necessary_info: false,
+    });
   }
 
   private update_has_necessary_info() {
     let new_state: boolean = true;
 
-    if (this.state.user_id_to_delete === "" || this.state.password === "") {
+    if (this.state.password === "") {
       new_state = false;
     }
 

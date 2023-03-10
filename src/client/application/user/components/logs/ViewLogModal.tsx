@@ -83,7 +83,7 @@ export class ViewLogModal extends Component<
           <hr />
           <div className="row">
             <button className="close" onClick={this.hide}>
-              Cancel
+              {this.props.perms.is_admin ? "Cancel" : "Close"}
             </button>
             {this.props.perms.is_admin && (
               <button className="delete" onClick={this.delete_log}>

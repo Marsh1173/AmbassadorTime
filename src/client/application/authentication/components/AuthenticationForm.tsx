@@ -8,7 +8,7 @@ export interface AuthenticationFormProps {
 }
 
 export interface AuthenticationFormState {
-  username: string;
+  user_id: string;
   password: string;
   has_necessary_info: boolean;
 }
@@ -19,7 +19,7 @@ export class AuthenticationForm extends Component<
 > {
   constructor(props: AuthenticationFormProps) {
     super(props);
-    this.state = { username: "", password: "", has_necessary_info: false };
+    this.state = { user_id: "", password: "", has_necessary_info: false };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.on_submit = this.on_submit.bind(this);
@@ -32,7 +32,7 @@ export class AuthenticationForm extends Component<
     const name = target.name;
 
     if (name === "username") {
-      this.setState({ username: value }, this.update_has_necessary_info);
+      this.setState({ user_id: value }, this.update_has_necessary_info);
     } else if (name === "password") {
       this.setState({ password: value }, this.update_has_necessary_info);
     }
@@ -54,9 +54,9 @@ export class AuthenticationForm extends Component<
         <input
           name="username"
           type={"text"}
-          value={this.state.username}
+          value={this.state.user_id}
           onChange={this.handleInputChange}
-          placeholder={"Username"}
+          placeholder={"User ID"}
         />
         <input
           name="password"
@@ -78,7 +78,7 @@ export class AuthenticationForm extends Component<
     FetchStoredLogin.fetch((last_used_username, last_used_password) => {
       this.setState(
         {
-          username: last_used_username,
+          user_id: last_used_username,
           password: last_used_password,
         },
         this.update_has_necessary_info
@@ -88,11 +88,11 @@ export class AuthenticationForm extends Component<
 
   private on_submit(ev: FormEvent) {
     ev.preventDefault();
-    this.props.on_submit(this.state.username, this.state.password);
+    this.props.on_submit(this.state.user_id, this.state.password);
   }
 
   private update_has_necessary_info() {
-    if (this.state.username !== "" && this.state.password !== "") {
+    if (this.state.user_id !== "" && this.state.password !== "") {
       this.setState({ has_necessary_info: true });
     } else {
       this.setState({ has_necessary_info: false });

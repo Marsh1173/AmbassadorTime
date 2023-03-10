@@ -103,6 +103,7 @@ export class Client
   }
 
   public force_close(): void {
+    console.log("here");
     this.ws.close();
   }
 }

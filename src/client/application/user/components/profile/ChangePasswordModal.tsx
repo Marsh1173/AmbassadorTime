@@ -1,28 +1,31 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { Component } from "react";
-import { Modal } from "../../../view/components/Modal";
-import { IClientApp } from "../../ClientApp";
+import { Modal } from "../../../../view/components/Modal";
+import { IClientApp } from "../../../ClientApp";
+import { LoggerServerTalkerWrapper } from "../../logger/LoggerServerTalkerWrapper";
 
-export interface ChangePasswordFormProps {
-  on_submit: (new_password: string) => void;
+export interface ChangePasswordModalProps {
   client_app: IClientApp;
+  logger_stw: LoggerServerTalkerWrapper;
 }
 
-export interface ChangePasswordFormState {
+export interface ChangePasswordModalState {
+  visible: boolean;
   new_password: string;
   confirm_password: string;
   has_necessary_values: boolean;
 }
 
-export class ChangePasswordForm extends Component<
-  ChangePasswordFormProps,
-  ChangePasswordFormState
+export class ChangePasswordModal extends Component<
+  ChangePasswordModalProps,
+  ChangePasswordModalState
 > {
   private readonly modal_ref: React.RefObject<ConfirmChangePasswordModal> =
     React.createRef();
-  constructor(props: ChangePasswordFormProps) {
+  constructor(props: ChangePasswordModalProps) {
     super(props);
     this.state = {
+      visible: false,
       new_password: "",
       confirm_password: "",
       has_necessary_values: false,
@@ -31,6 +34,9 @@ export class ChangePasswordForm extends Component<
     this.handleInputChange = this.handleInputChange.bind(this);
     this.on_submit = this.on_submit.bind(this);
     this.confirm_change_password = this.confirm_change_password.bind(this);
+
+    this.show = this.show.bind(this);
+    this.hide = this.hide.bind(this);
   }
 
   private handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -58,42 +64,50 @@ export class ChangePasswordForm extends Component<
 
   public render() {
     return (
-      <form
-        className="ChangePasswordForm"
-        onSubmit={(ev) => {
-          this.on_submit(ev);
-        }}
-      >
-        <h1 className="title">Change Password</h1>
-        <input
-          name="new_password"
-          type={"password"}
-          value={this.state.new_password}
-          onChange={this.handleInputChange}
-          placeholder={"New Password"}
-          autoComplete={"new-password"}
-        />
-        <input
-          name="confirm_password"
-          type="password"
-          value={this.state.confirm_password}
-          onChange={this.handleInputChange}
-          placeholder={"Confirm Password"}
-          autoComplete={"confirm-password"}
-        />
-        <input
-          className="submit"
-          type={"submit"}
-          value={"Change"}
-          disabled={!this.state.has_necessary_values}
-        />
-        <ConfirmChangePasswordModal
-          on_confirm={() => {
-            this.confirm_change_password();
+      <Modal visible={this.state.visible} on_close={this.hide}>
+        <form
+          className="ChangePasswordModal"
+          onSubmit={(ev) => {
+            this.on_submit(ev);
           }}
-          ref={this.modal_ref}
-        ></ConfirmChangePasswordModal>
-      </form>
+        >
+          <h1 className="title">Change Password</h1>
+          <input
+            name="new_password"
+            type={"password"}
+            value={this.state.new_password}
+            onChange={this.handleInputChange}
+            placeholder={"New Password"}
+            autoComplete={"new-password"}
+          />
+          <input
+            name="confirm_password"
+            type="password"
+            value={this.state.confirm_password}
+            onChange={this.handleInputChange}
+            placeholder={"Confirm Password"}
+            autoComplete={"confirm-password"}
+          />
+          <div className="row">
+            <input
+              className="submit"
+              type={"submit"}
+              value={"Change"}
+              disabled={!this.state.has_necessary_values}
+            />
+            <button className="cancel" onClick={() => this.hide()}>
+              Cancel
+            </button>
+          </div>
+
+          <ConfirmChangePasswordModal
+            on_confirm={() => {
+              this.confirm_change_password();
+            }}
+            ref={this.modal_ref}
+          ></ConfirmChangePasswordModal>
+        </form>
+      </Modal>
     );
   }
 
@@ -122,12 +136,21 @@ export class ChangePasswordForm extends Component<
   }
 
   private confirm_change_password() {
-    this.props.on_submit(this.state.new_password);
+    this.props.logger_stw.send_attempt_change_password(this.state.new_password);
     this.setState({
+      visible: false,
       new_password: "",
       confirm_password: "",
       has_necessary_values: false,
     });
+  }
+
+  public show() {
+    this.setState({ visible: true });
+  }
+
+  private hide() {
+    this.setState({ visible: false });
   }
 }
 

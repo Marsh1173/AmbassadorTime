@@ -93,6 +93,7 @@ export class AdminServerTalkerWrapper extends UserServerTalkerWrapper {
       },
     });
     this.request_fetch_users();
+    this.request_fetch_logs();
   }
 
   public attempt_delete_log(log_id_to_delete: LogId) {

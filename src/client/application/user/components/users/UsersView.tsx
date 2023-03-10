@@ -1,24 +1,35 @@
 import React, { Component } from "react";
+import { LogModel } from "../../../../../model/db/LogModel";
 import { UserTimeData, UserPerms } from "../../../../../model/db/UserModel";
 import { ATTime } from "../../../../../model/utils/ATDate";
 import { IClientApp } from "../../../ClientApp";
 import { AdminServerTalkerWrapper } from "../../admin/AdminServerTalkerWrapper";
 import { CreateUserModal } from "./CreateUserModal";
 import { DeleteUserModal } from "./DeleteUserModal";
+import { UserDetailModal } from "./UserDetailModal";
 
 export interface UsersViewProps {
   users: UserTimeData[] | undefined;
   admin_stw: AdminServerTalkerWrapper;
   client_app: IClientApp;
+  logs: LogModel[];
 }
 
-export class UsersView extends Component<UsersViewProps, {}> {
+export interface UsersViewState {
+  selected_user: UserTimeData | undefined;
+}
+
+export class UsersView extends Component<UsersViewProps, UsersViewState> {
   private readonly create_user_modal_ref: React.RefObject<CreateUserModal> =
     React.createRef();
-  private readonly delete_user_modal_ref: React.RefObject<DeleteUserModal> =
+  private readonly user_detail_modal_ref: React.RefObject<UserDetailModal> =
     React.createRef();
   constructor(props: UsersViewProps) {
     super(props);
+
+    this.state = { selected_user: undefined };
+
+    this.open_user = this.open_user.bind(this);
   }
 
   public render() {
@@ -37,7 +48,10 @@ export class UsersView extends Component<UsersViewProps, {}> {
             <tbody>
               {this.props.users.map((user_data) => {
                 return (
-                  <tr key={user_data.displayname}>
+                  <tr
+                    key={user_data.displayname}
+                    onClick={() => this.open_user(user_data)}
+                  >
                     <td className="name">
                       {user_data.displayname}
                       {user_data.perms === UserPerms.Admin && " (admin)"}
@@ -46,7 +60,7 @@ export class UsersView extends Component<UsersViewProps, {}> {
                     <td className="time">
                       {user_data.perms === UserPerms.Logger
                         ? ATTime.get_hours_and_minutes_from_minutes(
-                            user_data.time
+                            user_data.total_time
                           )
                         : "N/A"}
                     </td>
@@ -61,25 +75,16 @@ export class UsersView extends Component<UsersViewProps, {}> {
 
     return (
       <div className="UsersView">
+        <button
+          className="create"
+          onClick={() => {
+            this.create_user_modal_ref.current?.show();
+          }}
+        >
+          New User
+        </button>
         {child_element}
-        <div className="footer">
-          <button
-            className="delete"
-            onClick={() => {
-              this.delete_user_modal_ref.current?.show();
-            }}
-          >
-            Delete
-          </button>
-          <button
-            className="create"
-            onClick={() => {
-              this.create_user_modal_ref.current?.show();
-            }}
-          >
-            Create
-          </button>
-        </div>
+        <span className="info">Click on a row to see more.</span>
         <CreateUserModal
           ref={this.create_user_modal_ref}
           client_app={this.props.client_app}
@@ -87,17 +92,18 @@ export class UsersView extends Component<UsersViewProps, {}> {
             this.props.admin_stw.attempt_create_user(display_name, user_id);
           }}
         ></CreateUserModal>
-        <DeleteUserModal
-          ref={this.delete_user_modal_ref}
-          on_confirm={(user_id_to_delete: string, password: string) => {
-            this.props.admin_stw.attempt_delete_user(
-              user_id_to_delete,
-              password
-            );
-          }}
-          users={this.props.users}
-        ></DeleteUserModal>
+        <UserDetailModal
+          ref={this.user_detail_modal_ref}
+          admin_stw={this.props.admin_stw}
+          logs={this.props.logs}
+        ></UserDetailModal>
       </div>
     );
+  }
+
+  private open_user(user_data: UserTimeData) {
+    if (this.user_detail_modal_ref.current) {
+      this.user_detail_modal_ref.current.show(user_data);
+    }
   }
 }

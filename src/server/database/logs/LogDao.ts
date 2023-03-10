@@ -21,7 +21,7 @@ export const create_log_table_string = (
     'time_logged_ms' INT NOT NULL,\
     'user_id' BOOLEAN NOT NULL,\
     FOREIGN KEY (user_id) REFERENCES ${user_table_name} (id)\
-    );`;
+    ON DELETE CASCADE);`;
 };
 
 export interface ILogDao {
@@ -136,7 +136,13 @@ export class LogDao extends DAO implements ILogDao {
       );
       return {
         success: true,
-        log: { ...data, id, time_logged_ms: now, user_id: user_data.id },
+        log: {
+          ...data,
+          id,
+          time_logged_ms: now,
+          user_id: user_data.id,
+          displayname: user_data.displayname,
+        },
       };
     }, new Map([["SQLITE_CONSTRAINT_FOREIGNKEY", user_does_not_exist]]));
   }

@@ -9,4 +9,5 @@ export interface LogModel extends HasId {
   readonly minutes_logged: number;
   readonly time_logged_ms: number;
   readonly user_id: UserId;
+  readonly displayname: string;
 }
