@@ -2,18 +2,13 @@ const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 
 const contentBase = path.join(__dirname, "./public");
-// var entry = "./src/client/remoteMain.tsx";
-// var entry = "./src/client/localMain.tsx";
-var entry =
-  env === production
-    ? "./src/client/prod_index.ts"
-    : "./src/client/dev_index.ts test";
+var entry = "./src/client/prod_index.ts";
 
 module.exports = {
   entry,
   devServer: {
     watchContentBase: true,
-    port: 3000,
+    port: 3001,
     contentBase,
   },
   mode: "production",
