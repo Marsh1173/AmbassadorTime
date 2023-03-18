@@ -1,17 +1,23 @@
-const port: number = 3001;
-
 export interface ClientConfig {
-  url: string;
+  port: number;
+  ws_url: () => string;
   is_development: boolean;
 }
 
 export const DEFAULT_CLIENT_CONFIG: ClientConfig = {
-  url: `wss://${location.hostname}:` + port,
+  port: 3001,
+  ws_url: () => {
+    const protocol = window.location.protocol.includes("https") ? "wss" : "ws";
+    return `${protocol}://${location.host}:${DEFAULT_CLIENT_CONFIG.port}`;
+  },
   is_development: false,
 };
 
 export const DEVELOPMENT_CLIENT_CONFIG: ClientConfig = {
   ...DEFAULT_CLIENT_CONFIG,
-  url: `ws://${location.hostname}:` + port,
+  port: 3000,
+  ws_url: () => {
+    return `ws://${location.host}`;
+  },
   is_development: true,
 };

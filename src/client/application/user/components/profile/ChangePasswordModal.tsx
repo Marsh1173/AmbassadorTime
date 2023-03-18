@@ -16,12 +16,8 @@ export interface ChangePasswordModalState {
   has_necessary_values: boolean;
 }
 
-export class ChangePasswordModal extends Component<
-  ChangePasswordModalProps,
-  ChangePasswordModalState
-> {
-  private readonly modal_ref: React.RefObject<ConfirmChangePasswordModal> =
-    React.createRef();
+export class ChangePasswordModal extends Component<ChangePasswordModalProps, ChangePasswordModalState> {
+  private readonly modal_ref: React.RefObject<ConfirmChangePasswordModal> = React.createRef();
   constructor(props: ChangePasswordModalProps) {
     super(props);
     this.state = {
@@ -45,10 +41,7 @@ export class ChangePasswordModal extends Component<
     const name = target.name;
 
     const update_has_necessary_values = () => {
-      if (
-        this.state.new_password !== "" &&
-        this.state.confirm_password !== ""
-      ) {
+      if (this.state.new_password !== "" && this.state.confirm_password !== "") {
         this.setState({ has_necessary_values: true });
       } else {
         this.setState({ has_necessary_values: false });
@@ -88,13 +81,9 @@ export class ChangePasswordModal extends Component<
             placeholder={"Confirm Password"}
             autoComplete={"confirm-password"}
           />
+          <span className="info">Use a password that you do not use anywhere else.</span>
           <div className="row">
-            <input
-              className="submit"
-              type={"submit"}
-              value={"Change"}
-              disabled={!this.state.has_necessary_values}
-            />
+            <input className="submit" type={"submit"} value={"Change"} disabled={!this.state.has_necessary_values} />
             <button className="cancel" onClick={() => this.hide()}>
               Cancel
             </button>
@@ -111,27 +100,16 @@ export class ChangePasswordModal extends Component<
     );
   }
 
-  private validate_passwords_are_the_same(
-    new_password: string,
-    confirm_password: string
-  ): boolean {
+  private validate_passwords_are_the_same(new_password: string, confirm_password: string): boolean {
     return new_password === confirm_password;
   }
 
   private on_submit(ev: FormEvent) {
     ev.preventDefault();
-    if (
-      this.validate_passwords_are_the_same(
-        this.state.new_password,
-        this.state.confirm_password
-      )
-    ) {
+    if (this.validate_passwords_are_the_same(this.state.new_password, this.state.confirm_password)) {
       this.modal_ref.current?.show();
     } else {
-      this.props.client_app.growl_service.put_growl(
-        "Passwords must match",
-        "bad"
-      );
+      this.props.client_app.growl_service.put_growl("Passwords must match", "bad");
     }
   }
 
@@ -154,10 +132,7 @@ export class ChangePasswordModal extends Component<
   }
 }
 
-class ConfirmChangePasswordModal extends Component<
-  { on_confirm: () => void },
-  { visible: boolean }
-> {
+class ConfirmChangePasswordModal extends Component<{ on_confirm: () => void }, { visible: boolean }> {
   constructor(props: { on_confirm: () => void }) {
     super(props);
     this.state = { visible: false };

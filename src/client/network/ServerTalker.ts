@@ -12,22 +12,16 @@ export interface IServerTalker {
   remove_observer: (id: Id) => void;
 }
 
-export class ServerTalker
-  extends BufferedMessageReceiver<IServerTalkerWrapper, string>
-  implements IServerTalker
-{
+export class ServerTalker extends BufferedMessageReceiver<IServerTalkerWrapper, string> implements IServerTalker {
   private wss: WebSocket;
 
-  constructor(
-    private readonly config: ClientConfig,
-    private readonly on_open: (server_talker: IServerTalker) => void
-  ) {
+  constructor(private readonly config: ClientConfig, private readonly on_open: (server_talker: IServerTalker) => void) {
     super();
     this.wss = this.open_websocket();
   }
 
   private open_websocket(): WebSocket {
-    let wss: WebSocket = new WebSocket(this.config.url);
+    let wss: WebSocket = new WebSocket(this.config.ws_url());
 
     wss.onclose = (ev: CloseEvent) => {
       this.on_unable_to_connect();
@@ -67,9 +61,7 @@ export class ServerTalker
   private on_close() {
     console.error("Websocket connection closed");
     this.observers.forEach((observer) => {
-      observer.on_server_talker_close(
-        "You have been disconnected. Try refreshing."
-      );
+      observer.on_server_talker_close("You have been disconnected. Try refreshing.");
     });
 
     this.wss.onerror = () => {};
@@ -92,10 +84,7 @@ export class ServerTalker
   }
 
   /* MESSAGE RECEIVING (mostly implemented in the BufferedMessageReceiver class) */
-  protected send_message_to_observers(
-    observers: IServerTalkerWrapper[],
-    msg: string
-  ): void {
+  protected send_message_to_observers(observers: IServerTalkerWrapper[], msg: string): void {
     let server_msg: ServerMessage = JSON.parse(msg) as ServerMessage;
     observers.forEach((observer) => {
       observer.receive_message(server_msg);

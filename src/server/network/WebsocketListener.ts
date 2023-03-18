@@ -48,9 +48,7 @@ export class WebsocketListener implements IWebsocketListener {
     let id: Id = make_id();
     console.log("Connected to " + id);
     let client: IClient = new Client(this.config, ws, id);
-    this.server_app.auth_service.unauthenticated_client_map.attach_client(
-      client
-    );
+    this.server_app.auth_service.unauthenticated_client_map.attach_client(client);
   }
 
   /* SERVER CREATION */
@@ -65,7 +63,7 @@ export class WebsocketListener implements IWebsocketListener {
       url = "localhost:" + port.toString();
     } else {
       server = this.create_remote_server();
-      url = "natehroylance.com:" + port.toString();
+      url = "eeambassadors.natehroylance.com:" + port.toString();
     }
 
     return [server, port, url];
@@ -78,12 +76,8 @@ export class WebsocketListener implements IWebsocketListener {
   private create_remote_server(): https.Server {
     return https.createServer(
       {
-        cert: fs.readFileSync(
-          "/etc/letsencrypt/live/server.natehroylance.com/cert.pem"
-        ),
-        key: fs.readFileSync(
-          "/etc/letsencrypt/live/server.natehroylance.com/privkey.pem"
-        ),
+        cert: fs.readFileSync("/etc/letsencrypt/live/server.natehroylance.com/cert.pem"),
+        key: fs.readFileSync("/etc/letsencrypt/live/server.natehroylance.com/privkey.pem"),
       },
       this.app
     );
