@@ -1,9 +1,6 @@
 import { UserPerms } from "../../../model/db/UserModel";
 import { create_log_table_string } from "../../database/logs/LogDao";
-import {
-  create_user_table_string,
-  UserDao,
-} from "../../database/users/UserDao";
+import { create_user_table_string, UserDao } from "../../database/users/UserDao";
 import { DB } from "../../database/utils/DB";
 
 const users_table_name: string = "users";
@@ -31,12 +28,6 @@ async function init() {
     id: "Admin",
     displayname: "Admin",
     perms: UserPerms.Admin,
-  });
-
-  user_dao.register_user({
-    id: "TestLogger",
-    displayname: "Test Logger",
-    perms: UserPerms.Logger,
   });
 }
 
