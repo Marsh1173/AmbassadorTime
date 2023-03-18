@@ -76,8 +76,8 @@ export class WebsocketListener implements IWebsocketListener {
   private create_remote_server(): https.Server {
     return https.createServer(
       {
-        cert: fs.readFileSync("/etc/letsencrypt/live/server.natehroylance.com/cert.pem"),
-        key: fs.readFileSync("/etc/letsencrypt/live/server.natehroylance.com/privkey.pem"),
+        cert: fs.readFileSync("/etc/letsencrypt/live/eeambassadors.natehroylance.com/cert.pem"),
+        key: fs.readFileSync("/etc/letsencrypt/live/eeambassadors.natehroylance.com/privkey.pem"),
       },
       this.app
     );
