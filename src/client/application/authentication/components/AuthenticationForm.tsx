@@ -13,10 +13,7 @@ export interface AuthenticationFormState {
   has_necessary_info: boolean;
 }
 
-export class AuthenticationForm extends Component<
-  AuthenticationFormProps,
-  AuthenticationFormState
-> {
+export class AuthenticationForm extends Component<AuthenticationFormProps, AuthenticationFormState> {
   constructor(props: AuthenticationFormProps) {
     super(props);
     this.state = { user_id: "", password: "", has_necessary_info: false };
@@ -75,11 +72,10 @@ export class AuthenticationForm extends Component<
   }
 
   public componentDidMount(): void {
-    FetchStoredLogin.fetch((last_used_username, last_used_password) => {
+    FetchStoredLogin.fetch((last_used_username) => {
       this.setState(
         {
           user_id: last_used_username,
-          password: last_used_password,
         },
         this.update_has_necessary_info
       );

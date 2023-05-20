@@ -8,7 +8,7 @@ export interface ServerConfig {
 export const DEFAULT_SERVER_CONFIG: ServerConfig = {
   port: 3001,
   is_development: false,
-  client_timeout_limit: 120,
+  client_timeout_limit: 300,
   database_path: "src/server/database/",
 };
 

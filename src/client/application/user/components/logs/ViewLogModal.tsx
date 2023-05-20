@@ -7,19 +7,14 @@ import { AdminServerTalkerWrapper } from "../../admin/AdminServerTalkerWrapper";
 import { LoggerServerTalkerWrapper } from "../../logger/LoggerServerTalkerWrapper";
 
 export interface ViewLogModalProps {
-  perms:
-    | { is_admin: false; stw: LoggerServerTalkerWrapper }
-    | { is_admin: true; stw: AdminServerTalkerWrapper };
+  perms: { is_admin: false; stw: LoggerServerTalkerWrapper } | { is_admin: true; stw: AdminServerTalkerWrapper };
 }
 
 interface ViewLogModalState {
   selected_log: LogModel | undefined;
 }
 
-export class ViewLogModal extends Component<
-  ViewLogModalProps,
-  ViewLogModalState
-> {
+export class ViewLogModal extends Component<ViewLogModalProps, ViewLogModalState> {
   constructor(props: ViewLogModalProps) {
     super(props);
     this.state = {
@@ -37,9 +32,7 @@ export class ViewLogModal extends Component<
       log_element = (
         <>
           <hr />
-          <span className="label">
-            {this.state.selected_log.short_description}
-          </span>
+          <span className="description">{this.state.selected_log.short_description}</span>
           {this.props.perms.is_admin && (
             <div className="row">
               <span className="label">User:</span>
@@ -48,48 +41,37 @@ export class ViewLogModal extends Component<
           )}
           <div className="row">
             <span className="label">Date:</span>
-            <span className="label">
-              {ATTime.get_date_from_ms(
-                this.state.selected_log.target_date_time_ms
-              )}
-            </span>
+            <span className="label">{ATTime.get_date_from_ms(this.state.selected_log.target_date_time_ms)}</span>
           </div>
           <div className="row">
             <span className="label">Hours + minutes:</span>
             <span className="label">
-              {ATTime.get_hours_and_minutes_from_minutes(
-                this.state.selected_log.minutes_logged
-              )}
+              {ATTime.get_hours_and_minutes_from_minutes(this.state.selected_log.minutes_logged)}
             </span>
           </div>
           <div className="row">
             <span className="label">Date logged:</span>
-            <span className="label">
-              {ATTime.get_date_from_ms(this.state.selected_log.time_logged_ms)}
-            </span>
+            <span className="label">{ATTime.get_date_from_ms(this.state.selected_log.time_logged_ms)}</span>
           </div>
         </>
       );
     }
 
     return (
-      <Modal
-        visible={this.state.selected_log !== undefined}
-        on_close={this.hide}
-      >
+      <Modal visible={this.state.selected_log !== undefined} on_close={this.hide}>
         <div className="ViewLogModal">
           <span className="title">Log Details</span>
           {log_element}
           <hr />
           <div className="row">
-            <button className="close" onClick={this.hide}>
-              {this.props.perms.is_admin ? "Cancel" : "Close"}
-            </button>
             {this.props.perms.is_admin && (
               <button className="delete" onClick={this.delete_log}>
                 Delete
               </button>
             )}
+            <button className="close" onClick={this.hide}>
+              Close
+            </button>
           </div>
         </div>
       </Modal>

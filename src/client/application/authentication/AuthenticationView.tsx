@@ -17,10 +17,7 @@ export interface AuthenticationViewState {
   submitted: boolean;
 }
 
-export class AuthenticationView extends Component<
-  { props: AuthenticationViewProps },
-  AuthenticationViewState
-> {
+export class AuthenticationView extends Component<{ props: AuthenticationViewProps }, AuthenticationViewState> {
   private readonly auth_stw: AuthenticatorServerTalkerWrapper;
 
   constructor(props: { props: AuthenticationViewProps }) {
@@ -44,10 +41,7 @@ export class AuthenticationView extends Component<
   public render() {
     return (
       <div className="AuthenticationView">
-        <AuthenticationForm
-          on_submit={this.on_attempt_login}
-          submitted={this.state.submitted}
-        ></AuthenticationForm>
+        <AuthenticationForm on_submit={this.on_attempt_login} submitted={this.state.submitted}></AuthenticationForm>
       </div>
     );
   }
@@ -57,18 +51,12 @@ export class AuthenticationView extends Component<
   }
 
   private last_attempted_username: string = "";
-  private last_attempted_password: string = "";
   private on_attempt_login(user_id: string, password: string) {
-    let frontend_errs: string[] =
-      LoginValidator.front_end_validate_username_and_password(
-        user_id,
-        password
-      );
+    let frontend_errs: string[] = LoginValidator.front_end_validate_username_and_password(user_id, password);
 
     if (frontend_errs.length === 0) {
       this.set_submitted(true);
       this.last_attempted_username = user_id;
-      this.last_attempted_password = password;
       this.auth_stw.send_login(user_id, password);
     } else {
       for (const err of frontend_errs) {
@@ -79,14 +67,8 @@ export class AuthenticationView extends Component<
 
   public on_successful_login(user_data: UserData) {
     let server_talker: IServerTalker = this.auth_stw.deconstruct();
-    SaveSuccessfulLogin.save_successful_login(
-      this.last_attempted_username,
-      this.last_attempted_password
-    );
-    this.props.props.client_app.growl_service.put_growl(
-      "Welcome, " + user_data.displayname + "!",
-      "good"
-    );
+    SaveSuccessfulLogin.save_successful_login(this.last_attempted_username);
+    this.props.props.client_app.growl_service.put_growl("Welcome, " + user_data.displayname + "!", "good");
     this.props.props.client_app.change_state_to_user({
       user_data,
       server_talker,

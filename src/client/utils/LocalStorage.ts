@@ -1,9 +1,7 @@
-type LocalStorageKey = "login-username" | "login-password";
+type LocalStorageKey = "login-username";
 
 export class LocalStorage {
-  public static get_local_storage_item<IData>(
-    key: LocalStorageKey
-  ): IData | undefined {
+  public static get_local_storage_item<IData>(key: LocalStorageKey): IData | undefined {
     let json_data: string | null = localStorage.getItem(key);
     if (json_data === null) {
       return undefined;

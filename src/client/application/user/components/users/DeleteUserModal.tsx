@@ -1,10 +1,6 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { Component } from "react";
-import {
-  UserData,
-  UserModel,
-  UserPerms,
-} from "../../../../../model/db/UserModel";
+import { UserData, UserModel, UserPerms } from "../../../../../model/db/UserModel";
 import { Modal } from "../../../../view/components/Modal";
 import { IClientApp } from "../../../ClientApp";
 
@@ -19,10 +15,7 @@ interface DeleteUserModalState {
   has_necessary_info: boolean;
 }
 
-export class DeleteUserModal extends Component<
-  DeleteUserModalProps,
-  DeleteUserModalState
-> {
+export class DeleteUserModal extends Component<DeleteUserModalProps, DeleteUserModalState> {
   constructor(props: DeleteUserModalProps) {
     super(props);
     this.state = {
@@ -38,9 +31,7 @@ export class DeleteUserModal extends Component<
     this.update_has_necessary_info = this.update_has_necessary_info.bind(this);
   }
 
-  private handleInputChange(
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) {
+  private handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const target = event.target;
     const value = target.value;
     const name = target.name;
@@ -65,19 +56,13 @@ export class DeleteUserModal extends Component<
             maxLength={30}
           ></input>
           <span className="warning">
-            When you delete a user, you delete ALL their logs too. This action
-            cannot be undone!
+            When you delete a user, you delete ALL their logs too. This action cannot be undone!
           </span>
           <div className="row">
             <button className="cancel" onClick={this.hide}>
               Cancel
             </button>
-            <input
-              className="submit"
-              type={"submit"}
-              value={"Delete User"}
-              disabled={!this.state.has_necessary_info}
-            />
+            <input className="submit" type={"submit"} value={"Delete User"} disabled={!this.state.has_necessary_info} />
           </div>
         </form>
       </Modal>
@@ -89,7 +74,7 @@ export class DeleteUserModal extends Component<
   }
 
   private hide() {
-    this.setState({ visible: false });
+    this.setState({ visible: false, password: "", has_necessary_info: false });
   }
 
   private on_submit(ev: FormEvent<HTMLFormElement>) {

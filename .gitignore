@@ -2,3 +2,5 @@ node_modules
 **/**.json
 **/**.log
 **/**.db
+**/**.db-shm
+**/**.db-wal
