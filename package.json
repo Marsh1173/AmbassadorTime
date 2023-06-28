@@ -38,7 +38,8 @@
     "dev-server": "ts-node-dev --respawn --notify false --prefer-ts --ignore-watch node_modules -- ./src/server/dev-index.ts",
     "test": "ts-node-dev ./src/test/run.ts",
     "redo-db-tables": "ts-node-dev ./src/server/utils/tools/init-redo.ts",
-    "change-admin-password": "ts-node-dev ./src/server/utils/tools/change-admin-password.ts"
+    "change-admin-password": "ts-node-dev ./src/server/utils/tools/change-admin-password.ts",
+    "run-patch-6-28-23": "ts-node-dev ./src/server/utils/tools/patches/patch-6-28-23.ts"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.3",

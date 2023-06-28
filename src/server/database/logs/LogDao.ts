@@ -9,27 +9,21 @@ import { DAO } from "../utils/Dao";
 export const user_does_not_exist: string = "User does not exist";
 export const cannot_log_future_time: string = "Cannot log hours in the future";
 
-export const create_log_table_string = (
-  table_name: string,
-  user_table_name: string
-) => {
+export const create_log_table_string = (table_name: string, user_table_name: string) => {
   return `CREATE TABLE '${table_name}' (\
     'id' VARCHAR(50) PRIMARY KEY NOT NULL,\
     'short_description' VARCHAR(30) NOT NULL,\
     'target_date_time_ms' INT NOT NULL,\
     'minutes_logged' INT NOT NULL,\
     'time_logged_ms' INT NOT NULL,\
-    'user_id' BOOLEAN NOT NULL,\
+    'user_id' VARCHAR(30) NOT NULL,\
     FOREIGN KEY (user_id) REFERENCES ${user_table_name} (id)\
     ON DELETE CASCADE);`;
 };
 
 export interface ILogDao {
   create_log(
-    data: Pick<
-      LogModel,
-      "short_description" | "target_date_time_ms" | "minutes_logged"
-    >,
+    data: Pick<LogModel, "short_description" | "target_date_time_ms" | "minutes_logged">,
     user_data: UserData
   ): LogModelSuccess | FailureMsg;
   delete_log(id: LogId): ReturnMsg;
@@ -69,9 +63,7 @@ export class LogDao extends DAO implements ILogDao {
       `INSERT INTO ${this.table_name} (id, short_description, target_date_time_ms, minutes_logged, time_logged_ms, user_id) VALUES (?, ?, ?, ?, ?, ?);`
     );
 
-    this.delete_log_statement = this.db.prepare(
-      `DELETE FROM ${this.table_name} WHERE id = ?`
-    );
+    this.delete_log_statement = this.db.prepare(`DELETE FROM ${this.table_name} WHERE id = ?`);
 
     this.edit_log_statement = this.db.prepare(
       `UPDATE ${this.table_name} SET short_description = ?, target_date_time_ms = ?, minutes_logged = ?, time_logged_ms = ? WHERE id = ?`
@@ -107,20 +99,13 @@ export class LogDao extends DAO implements ILogDao {
   }
 
   public create_log(
-    data: Pick<
-      LogModel,
-      "short_description" | "target_date_time_ms" | "minutes_logged"
-    >,
+    data: Pick<LogModel, "short_description" | "target_date_time_ms" | "minutes_logged">,
     user_data: UserData
   ): LogModelSuccess | FailureMsg {
     return this.catch_database_errors_get<LogModelSuccess>(() => {
       let now: number = Date.now();
 
-      let validate_log_results: ReturnMsg = ValidateLog.validate_log(
-        now,
-        data.target_date_time_ms,
-        user_data
-      );
+      let validate_log_results: ReturnMsg = ValidateLog.validate_log(now, data.target_date_time_ms, user_data);
       if (!validate_log_results.success) {
         return validate_log_results;
       }
@@ -154,9 +139,7 @@ export class LogDao extends DAO implements ILogDao {
     });
   }
 
-  public edit_log(
-    log_data: Partial<LogModel> & HasId
-  ): LogSuccess | FailureMsg {
+  public edit_log(log_data: Partial<LogModel> & HasId): LogSuccess | FailureMsg {
     return this.catch_database_errors_get<LogSuccess>(() => {
       let get_log_results: LogSuccess | FailureMsg = this.get_log(log_data.id);
       if (!get_log_results.success) {
