@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  UserData,
-  UserModel,
-  UserTimeData,
-} from "../../../../model/db/UserModel";
+import { UserData, UserModel, UserTimeData } from "../../../../model/db/UserModel";
 import { LeftNavProps } from "../components/base/LeftNav";
 import { UsersView } from "../components/users/UsersView";
 import { UserView, UserViewProps, UserViewState } from "../UserView";
@@ -13,7 +9,7 @@ import { LogsView } from "../components/logs/LogsView";
 import { LogModel } from "../../../../model/db/LogModel";
 
 export const admin_view_types = ["logs", "users", "action_logs"] as const;
-export type AdminViewType = typeof admin_view_types[number];
+export type AdminViewType = (typeof admin_view_types)[number];
 const INITIAL_VIEW: AdminViewType = "logs";
 
 export type AdminViewProps = UserViewProps;
@@ -27,23 +23,14 @@ const button_labels: Record<AdminViewType, string> = {
   logs: "Time Logs",
 };
 
-export class AdminView extends UserView<
-  AdminViewType,
-  AdminViewProps,
-  AdminViewState
-> {
-  public readonly action_log_view_ref: React.RefObject<ActionHistoryView> =
-    React.createRef();
+export class AdminView extends UserView<AdminViewType, AdminViewProps, AdminViewState> {
+  public readonly action_log_view_ref: React.RefObject<ActionHistoryView> = React.createRef();
 
   protected readonly stw: AdminServerTalkerWrapper;
   constructor(props: { props: AdminViewProps }) {
     super(props, { view: INITIAL_VIEW, users: undefined, logs: undefined });
 
-    this.stw = new AdminServerTalkerWrapper(
-      props.props.server_talker,
-      props.props.client_app,
-      this
-    );
+    this.stw = new AdminServerTalkerWrapper(props.props.server_talker, props.props.client_app, this);
 
     this.update_users_list = this.update_users_list.bind(this);
     this.update_user_times = this.update_user_times.bind(this);
@@ -61,10 +48,7 @@ export class AdminView extends UserView<
           ></UsersView>
         )}
         {this.state.view === "action_logs" && (
-          <ActionHistoryView
-            ref={this.action_log_view_ref}
-            admin_stw={this.stw}
-          ></ActionHistoryView>
+          <ActionHistoryView ref={this.action_log_view_ref} admin_stw={this.stw}></ActionHistoryView>
         )}
         {this.state.view === "logs" && (
           <LogsView
@@ -116,9 +100,7 @@ export class AdminView extends UserView<
       let logs = this.state.logs;
       let users = this.state.users;
       const month: number = new Date().getMonth();
-      let time_users: UserTimeData[] = users.map((user) =>
-        UserModel.FillTotalTime(user, logs, month)
-      );
+      let time_users: UserTimeData[] = users.map((user) => UserModel.FillTotalTime(user, logs, month));
 
       this.setState({ users: time_users });
     }
