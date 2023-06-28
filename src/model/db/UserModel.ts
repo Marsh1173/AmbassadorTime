@@ -30,8 +30,6 @@ export abstract class UserModel {
 
   public static FillTotalTime(user: UserData, logs: LogModel[], month: number): UserTimeData {
     const user_logs: LogModel[] = logs.filter((log) => log.user_id === user.id);
-    console.log("FillTotalTime");
-    console.log("user_logs length: " + user_logs.length);
 
     return {
       ...user,
@@ -45,10 +43,6 @@ export abstract class UserModel {
       const date = new Date(log.target_date_time_ms);
       return date.getMonth() === month && date.getFullYear() === year;
     });
-
-    console.log("GetMonthTime");
-    console.log("user_logs length: " + user_logs.length);
-    console.log("user_logs_this_month length: " + user_logs_this_month.length);
 
     return user_logs_this_month.reduce((sum, log) => sum + log.minutes_logged, 0);
   }

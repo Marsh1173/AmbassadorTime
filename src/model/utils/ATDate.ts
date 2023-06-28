@@ -6,24 +6,15 @@ export abstract class ATTime {
   }
 
   public static get_date_str(date: Date): string {
-    console.log("get_date_str");
-    const ret_value = date.toLocaleDateString();
-    console.log(ret_value);
-    return ret_value;
+    return date.toLocaleDateString();
   }
 
   public static get_hours_and_minutes_from_minutes(minutes: number): string {
-    console.log("get_hours_and_minutes_from_minutes");
-    const ret_value = Math.floor(minutes / 60) + ":" + (minutes % 60).toString().padStart(2, "0");
-    console.log(ret_value);
-    return ret_value;
+    return Math.floor(minutes / 60) + ":" + (minutes % 60).toString().padStart(2, "0");
   }
 
   public static get_date_from_ms(ms: number): string {
-    console.log("get_date_from_ms");
-    const ret_value = ATTime.get_date_str(new Date(ms));
-    console.log(ret_value);
-    return ret_value;
+    return ATTime.get_date_str(new Date(ms));
   }
 
   public static month_to_string(month: number) {
