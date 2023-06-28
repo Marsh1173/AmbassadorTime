@@ -1,29 +1,41 @@
+@import "../../styles/mixins/Mixins.less";
+@import "../../styles/MainStyles.less";
+
 .AuthenticationView {
-  .flex;
-  padding-top: 20vh;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
 
-  .AuthenticationForm {
-    .form;
+  .authentication-view-container {
+    .flex;
+    padding-top: 20vh;
 
-    text-align: center;
-
-    width: 400px;
-    max-width: 100vw;
-
-    & > * {
-      width: 100%;
-    }
-
-    input[type="submit"] {
-      &:not(:disabled) {
-        .shadowed-button (@color: @uvu-green);
-      }
-      &:disabled {
-        .shadowed-button (@color: @gray);
-      }
+    .AuthenticationForm {
+      .form;
+      .bordered;
       .rounded;
-      .padding-smaller;
-      .big-text;
+      background-color: @white;
+
+      text-align: center;
+
+      width: 400px;
+      max-width: 100vw;
+
+      & > * {
+        width: 100%;
+      }
+
+      input[type="submit"] {
+        &:not(:disabled) {
+          .shadowed-button (@color: @uvu-green);
+        }
+        &:disabled {
+          .shadowed-button (@color: @gray);
+        }
+        .rounded;
+        .padding-smaller;
+        .big-text;
+      }
     }
   }
 }

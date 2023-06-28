@@ -17,7 +17,10 @@ export interface AuthenticationViewState {
   submitted: boolean;
 }
 
-export class AuthenticationView extends Component<{ props: AuthenticationViewProps }, AuthenticationViewState> {
+export class AuthenticationView extends Component<
+  { props: AuthenticationViewProps },
+  AuthenticationViewState
+> {
   private readonly auth_stw: AuthenticatorServerTalkerWrapper;
 
   constructor(props: { props: AuthenticationViewProps }) {
@@ -41,7 +44,12 @@ export class AuthenticationView extends Component<{ props: AuthenticationViewPro
   public render() {
     return (
       <div className="AuthenticationView">
-        <AuthenticationForm on_submit={this.on_attempt_login} submitted={this.state.submitted}></AuthenticationForm>
+        <div className="authentication-view-container">
+          <AuthenticationForm
+            on_submit={this.on_attempt_login}
+            submitted={this.state.submitted}
+          ></AuthenticationForm>
+        </div>
       </div>
     );
   }
@@ -52,7 +60,11 @@ export class AuthenticationView extends Component<{ props: AuthenticationViewPro
 
   private last_attempted_username: string = "";
   private on_attempt_login(user_id: string, password: string) {
-    let frontend_errs: string[] = LoginValidator.front_end_validate_username_and_password(user_id, password);
+    let frontend_errs: string[] =
+      LoginValidator.front_end_validate_username_and_password(
+        user_id,
+        password
+      );
 
     if (frontend_errs.length === 0) {
       this.set_submitted(true);
@@ -68,7 +80,10 @@ export class AuthenticationView extends Component<{ props: AuthenticationViewPro
   public on_successful_login(user_data: UserData) {
     let server_talker: IServerTalker = this.auth_stw.deconstruct();
     SaveSuccessfulLogin.save_successful_login(this.last_attempted_username);
-    this.props.props.client_app.growl_service.put_growl("Welcome, " + user_data.displayname + "!", "good");
+    this.props.props.client_app.growl_service.put_growl(
+      "Welcome, " + user_data.displayname + "!",
+      "good"
+    );
     this.props.props.client_app.change_state_to_user({
       user_data,
       server_talker,
