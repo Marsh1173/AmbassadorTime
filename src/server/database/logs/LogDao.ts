@@ -84,7 +84,7 @@ export class LogDao extends DAO implements ILogDao {
       FROM ${this.table_name} \
       LEFT JOIN ${this.users_table_name} \
       ON ${this.table_name}.user_id = ${this.users_table_name}.id \
-      and user_id = ? \
+      WHERE ${this.table_name}.user_id = ? \
       ORDER BY target_date_time_ms DESC;`
     );
 
